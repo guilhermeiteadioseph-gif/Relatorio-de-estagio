@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { roles } from '../constants/roles';
+import { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { mockUsers } from '../mocks/data';
 
 export const AuthContext = createContext();
 

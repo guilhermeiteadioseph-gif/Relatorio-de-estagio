@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Router, Routes, Route } from 'react-router';
 import { AuthProvider } from './contexts/AuthContext';
 import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
-import { Roles } from './constants/roles';
+import { roles } from './constants/roles';
+import { Navigate } from 'react-router';
 
-const LoginPage = () => <h2>Tela de Login</h2>;
 const DashboardAluno = () => <h2>Dashboard do Aluno</h2>;
 const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
@@ -14,21 +14,21 @@ const DashboardAssistente = () => <h2>Dashboard do Assistente</h2>;
 const AccessDeniedPage = () => <h2>Acesso Negado</h2>;
 
 import './App.css'
+import { PaginaLogin } from './pages/Login';
 
 export default function App() {
   const [count, setCount] = useState(0)
 
   return (
     <AuthProvider>
-      <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<PaginaLogin />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
           
           <Route 
             path="/aluno/*" 
             element={
-              <ProtectedRoute allowedRoles={[Roles.ALUNO]}>
+              <ProtectedRoute allowedRoles={[roles.ALUNO]}>
                 <DashboardAluno />
               </ProtectedRoute>
             } 
@@ -37,7 +37,7 @@ export default function App() {
           <Route 
             path="/professor/*" 
             element={
-              <ProtectedRoute allowedRoles={[Roles.PROFESSOR]}>
+              <ProtectedRoute allowedRoles={[roles.PROFESSOR]}>
                 <DashboardProfessor />
               </ProtectedRoute>
             } 
@@ -46,7 +46,7 @@ export default function App() {
           <Route 
             path="/vice-diretor/*" 
             element={
-              <ProtectedRoute allowedRoles={[Roles.VICE_DIRETOR]}>
+              <ProtectedRoute allowedRoles={[roles.VICE_DIRETOR]}>
                 <DashboardViceDiretor />
               </ProtectedRoute>
             } 
@@ -55,7 +55,7 @@ export default function App() {
           <Route 
             path="/supervisor/*" 
             element={
-              <ProtectedRoute allowedRoles={[Roles.SUPERVISOR]}>
+              <ProtectedRoute allowedRoles={[roles.SUPERVISOR]}>
                 <DashboardSupervisor />
               </ProtectedRoute>
             } 
@@ -64,7 +64,7 @@ export default function App() {
           <Route 
             path="/assistente/*" 
             element={
-              <ProtectedRoute allowedRoles={[Roles.ASSISTENTE]}>
+              <ProtectedRoute allowedRoles={[roles.ASSISTENTE]}>
                 <DashboardAssistente />
               </ProtectedRoute>
             } 
@@ -72,7 +72,6 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </BrowserRouter>
     </AuthProvider>
   );
 }

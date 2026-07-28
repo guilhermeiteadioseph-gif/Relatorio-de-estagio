@@ -1,5 +1,5 @@
-import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 
 export function Layout({ children }) {

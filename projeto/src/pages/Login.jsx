@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
-import { Roles } from "../constants/roles";
+import { roles } from "../constants/roles";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,15 +23,15 @@ export function PaginaLogin() {
         const usuarioLogado = login(email,senha);
 
         if (usuarioLogado) {
-            if (usuarioLogado.role === Roles.ALUNO) {
+            if (usuarioLogado.role === roles.ALUNO) {
                 navigate("/aluno");
-            } else if (usuarioLogado.role === Roles.PROFESSOR) {
+            } else if (usuarioLogado.role === roles.PROFESSOR) {
                 navigate("/professor");
-            } else if (usuarioLogado.role === Roles.VICE_DIRETOR) {
+            } else if (usuarioLogado.role === roles.VICE_DIRETOR) {
                 navigate("/vice-diretor");
-            } else if (usuarioLogado.role === Roles.SUPERVISOR) {
+            } else if (usuarioLogado.role === roles.SUPERVISOR) {
                 navigate("/supervisor");
-            } else if (usuarioLogado.role === Roles.ASSISTENTE) {
+            } else if (usuarioLogado.role === roles.ASSISTENTE) {
                 navigate("/assistente");
             }
         } else {
