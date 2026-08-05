@@ -16,7 +16,7 @@ export function Layout({ children }) {
         {/* Cabeçalho com o nome do sistema e botão de logout */}
         <header className="bg-white shadow">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold text-gray-900">SIGEP</h1>
+            <h1 className="text-3xl font-bold text-gray-900">SIGET</h1>
             {user && (
               <div className="mt-4">
                 <span className="mr-4">Bem-vindo, {user.name}!</span>

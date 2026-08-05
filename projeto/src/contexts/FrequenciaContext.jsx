@@ -1,12 +1,12 @@
 import { createContext, useState, useContext } from "react";
 import { mockFrequencias } from "../mocks/data";
 
-const FrequenciaContext = createContext();
+const FrequenciaContext = createContext(null);
 
 export const FrequenciaProvider = ({ children }) => {
   const [frequencias, setFrequencias] = useState(mockFrequencias);
 
-  const addFrequencia = (newFrequencia) => {
+  const marcarFrequencia = (newFrequencia) => {
     const item = {
         id: `freq_${Date.now()}`,
         status: "Pendente",
@@ -16,10 +16,12 @@ export const FrequenciaProvider = ({ children }) => {
   };
 
     return (
-        <FrequenciaContext.Provider value={{ frequencias, addFrequencia }}>
+        <FrequenciaContext.Provider value={{ frequencias, marcarFrequencia }}>
         {children}
         </FrequenciaContext.Provider>
     );
 };
 
-export const useFrequencia = () => useContext(FrequenciaContext);
+export const useFrequencia = () => {
+  return useContext(FrequenciaContext);
+};

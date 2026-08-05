@@ -5,8 +5,8 @@ import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
+import { DashboardAluno } from './pages/aluno/DashboardAluno';
 
-const DashboardAluno = () => <h2>Dashboard do Aluno</h2>;
 const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
 const DashboardSupervisor = () => <h2>Dashboard do Supervisor</h2>;
@@ -21,15 +21,16 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <FrequenciaProvider>
         <Routes>
           <Route path="/login" element={<PaginaLogin />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
           
-          <Route 
+            <Route 
             path="/aluno/*" 
             element={
               <ProtectedRoute allowedRoles={[roles.ALUNO]}>
-                <DashboardAluno />
+                <DashboardAluno/>
               </ProtectedRoute>
             } 
           />
@@ -72,6 +73,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+      </FrequenciaProvider>
     </AuthProvider>
   );
 }
