@@ -1,6 +1,11 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
+import { AppSidebar } from "./app-sidebar";
+import { 
+  SidebarProvider, 
+  SidebarInset, 
+  SidebarTrigger } from "@/components/ui/sidebar";
 
 export function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -12,24 +17,17 @@ export function Layout({ children }) {
   };
 
     return (
-      <div className="min-h-screen bg-gray-100">
-        {/* Cabeçalho com o nome do sistema e botão de logout */}
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold text-gray-900">SIGET</h1>
-            {user && (
-              <div className="mt-4">
-                <span className="mr-4">Bem-vindo, {user.name}!</span>
-                <Button onClick={handleLogout}>Sair</Button>
-              </div>
-            )}
-          </div>
-        </header>
-
-        {/* Conteúdo principal */}
-        <main className="flex-1 p-6 max-w-6xl w-full mx-auto">
-          {children}
-        </main>
-      </div>
+      <SidebarProvider defaultOpen={true}>
+        <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-16 items-center gap-2 border-b px-4">
+              <SidebarTrigger/>
+              <h1 className="font-semibold text-lg">SIGET CETEP Araci</h1>
+            </header>
+            <main className="p-6">
+              {children}
+            </main>
+          </SidebarInset>
+      </SidebarProvider> 
     );
 }
