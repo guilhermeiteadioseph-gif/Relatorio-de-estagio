@@ -44,7 +44,7 @@ export function AppSidebar() {
                                 const Icon = item.icon;
                                 return (
                                     <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton tooltip={item.title}
+                                        <SidebarMenuButton asChild isActive tooltip={item.title}
                                         render={
                                             <Link to={item.url} className="flex items-center gap-2 w-full">
                                                 {Icon && <Icon className="w-4 h-4 shrink-0" />}
