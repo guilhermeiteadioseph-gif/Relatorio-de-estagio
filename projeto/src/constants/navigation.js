@@ -15,6 +15,7 @@ export const navigationItems = {
         { title: 'Autoavaliação', url: '/aluno/autoavaliação', icon: CheckSquare },
         { title: 'Avaliação do Supervisor', url: '/aluno/avaliacao-supervisor', icon: CheckSquare },
         { title: 'Avaliação do Professor', url: '/aluno/avaliacao-professor', icon: CheckSquare },
+        { title: 'Configurações', url: '/aluno/configuracoes', icon: Settings },
     ],
     supervisor: [
         { title: 'Painel', url: '/supervisor/painel', icon: LayoutPanelLeft },
@@ -22,12 +23,14 @@ export const navigationItems = {
         { title: 'Documentos e Relatórios', url: '/supervisor/relatorios', icon: FileText },
         { title: 'Frequências', url: '/supervisor/frequencias', icon: Clock },
         { title: 'Validação do Estágio', url: '/supervisor/estagiarios/validacao', icon: Clock },
+        { title: 'Configurações', url: '/supervisor/configuracoes', icon: Settings },
     ],
     professor: [
         { title: 'Painel', url: '/professor/painel', icon: LayoutPanelLeft },
         { title: 'Meus Orientandos', url: '/professor/orientandos', icon: User },
         { title: 'Documentos e Relatórios', url: '/professor/relatorios', icon: FileText },
         { title: 'Avaliação de Estágio', url: '/professor/avaliacao-estagio', icon: CheckSquare },
+        { title: 'Configurações', url: '/professor/configuracoes', icon: Settings },
     ],
     assistente: [
         { title: 'Painel', url: '/assistente/painel', icon: LayoutPanelLeft },
@@ -35,6 +38,7 @@ export const navigationItems = {
         { title: 'Avaliaçãões de Estágio', url: '/assistente/avaliacoes-estagio', icon: CheckSquare },
         { title: 'Documentos e Relatórios', url: '/assistente/relatorios', icon: FileText },
         { title: 'Fichas de Frequência', url: '/assistente/fichas-frequencia', icon: ClipboardCheck },
+        { title: 'Configurações', url: '/assistente/configuracoes', icon: Settings },
     ],
     vice_diretor: [
         { title: 'Painel', url: '/vice-diretor/painel', icon: LayoutPanelLeft },
@@ -45,5 +49,6 @@ export const navigationItems = {
         { title: 'Usuários', url: '/vice-diretor/gerenciar-usuarios', icon: Users },
         { title: 'Empresas', url: '/vice-diretor/gerenciar-empresas', icon: Building },
         { title: 'Cursos', url: '/vice-diretor/gerenciar-cursos', icon: GraduationCap },
+        { title: 'Configurações', url: '/vice-diretor/configuracoes', icon: Settings },
     ],
 }

@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { BrowserRouter, Router, Routes, Route } from 'react-router';
+import { Routes, Route } from 'react-router';
 import { AuthProvider } from './contexts/AuthContext';
 import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
 import { DashboardAluno } from './pages/aluno/DashboardAluno';
+import { ThemeProvider } from './components/theme-provider';
 
 const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <AuthProvider>
       <FrequenciaProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Routes>
           <Route path="/login" element={<PaginaLogin />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
@@ -73,6 +75,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        </ThemeProvider>
       </FrequenciaProvider>
     </AuthProvider>
   );
