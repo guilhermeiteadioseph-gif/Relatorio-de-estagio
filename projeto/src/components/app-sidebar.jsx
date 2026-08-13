@@ -81,7 +81,7 @@ export function AppSidebar() {
         <SidebarSeparator className="bg-white/10 hidden" />
 
         {/* 2. CONTEÚDO PRINCIPAL */}
-        <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto">
+        <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto ">
           <SidebarGroup>
             <SidebarGroupContent className="space-y-0.5">
               <SidebarMenu>

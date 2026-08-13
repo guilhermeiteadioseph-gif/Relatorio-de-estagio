@@ -16,18 +16,17 @@ function DropdownMenuPortal({
   return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
-const DropdownMenuTrigger = React.forwardRef(({ asChild = false, children, className, ...props }, ref) => {
-  // Prefer to delegate `asChild` to the Base UI primitive if requested.
-  if (asChild) {
-    return (
-      <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" asChild ref={ref} className={className} {...props}>
-        {children}
-      </MenuPrimitive.Trigger>
-    )
-  }
-
+const DropdownMenuTrigger = React.forwardRef(({ render, children, className, ...props }, ref) => {
   return (
-    <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" ref={ref} className={className} {...props} />
+    <MenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      ref={ref}
+      render={render}
+      className={className}
+      {...props}
+    >
+      {children}
+    </MenuPrimitive.Trigger>
   )
 });
 
