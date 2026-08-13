@@ -63,19 +63,18 @@ export function PaginaLogin() {
         {/* Logo Superior Esquerdo */}
         <div className="relative z-20 flex items-center gap-2 text-lg font-medium">
           <GraduationCap className="h-6 w-6" />
-          SIGET CETEP ARACI
+          SIGET
         </div>
+        <footer className="text-sm opacity-80">
+          Sistema Integrado de Gestão de Estágio Técnico
+        </footer>
 
         {/* Texto Inspiracional Inferior (como no seu protótipo) */}
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "A educação é o passaporte para o futuro, pois o amanhã pertence
-              àqueles que se preparam para ele hoje."
+              Null
             </p>
-            <footer className="text-sm opacity-80">
-              Sistema Integrado de Gestão Escolar e Tecnológica
-            </footer>
           </blockquote>
         </div>
       </div>
@@ -137,12 +136,12 @@ export function PaginaLogin() {
 
                 {/* Exibição de Erros */}
                 {error && (
-                  <p className="text-sm font-medium text-destructive">{error}</p>
+                  <p className="text-sm text-red-400 font-medium text-destructive">{error}</p>
                 )}
 
                 {/* Botão Entrar */}
-                <Button type="submit" className="w-full mt-2">
-                  Entrar no sistema
+                <Button type="submit" className="w-full mt-2 cursor-pointer">
+                  Entrar
                 </Button>
               </div>
             </form>
@@ -150,7 +149,7 @@ export function PaginaLogin() {
 
           {/* Rodapé Opcional */}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            Ao clicar em entrar, você concorda com nossos{" "}
+            Ao usar o site, você concorda com nossos{" "}
             <a href="#" className="underline underline-offset-4 hover:text-primary">
               Termos de Serviço
             </a>{" "}
