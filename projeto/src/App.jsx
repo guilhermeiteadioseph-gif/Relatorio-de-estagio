@@ -23,7 +23,6 @@ export default function App() {
   return (
     <AuthProvider>
       <FrequenciaProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Routes>
           <Route path="/login" element={<PaginaLogin />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
@@ -75,7 +74,6 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-        </ThemeProvider>
       </FrequenciaProvider>
     </AuthProvider>
   );
