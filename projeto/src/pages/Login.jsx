@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ClipboardList, Award, Printer, FileText } from "lucide-react";
+import { GraduationCap, ClipboardList, Award, UserPlus, FileText } from "lucide-react";
 
 export function PaginaLogin() {
     const [email, setEmail] = useState("");
@@ -62,7 +62,7 @@ export function PaginaLogin() {
         <div className="relative z-10 grid grid-cols-2 gap-3">
           {[
             { icon: ClipboardList, text: 'Registro de frequência' }, { icon: FileText, text: 'Relatório Final' },
-            { icon: Award, text: 'Avaliação de Estágio' }, { icon: Printer, text: 'Exportação em PDF' },
+            { icon: Award, text: 'Avaliação de Estágio' }, { icon: UserPlus, text: 'Cadastro de Estagiários' },
           ].map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-center gap-2.5 rounded-xl p-3" style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}>
               <Icon size={14} className="text-blue-300 flex-shrink-0" />

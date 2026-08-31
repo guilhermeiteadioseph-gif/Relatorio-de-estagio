@@ -117,8 +117,13 @@ export function AppSidebar() {
         </SidebarHeader>
 
         {/* 2. CONTEÚDO PRINCIPAL */}
+<<<<<<< HEAD
         <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto group-data-[collapsible=icon]:p-2">
           <SidebarGroup className="p-0">
+=======
+        <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto ">
+          <SidebarGroup>
+>>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
             <SidebarGroupContent className="space-y-0.5">
               <SidebarMenu>
                 {navItems
