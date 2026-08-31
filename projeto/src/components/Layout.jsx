@@ -3,7 +3,6 @@ import { AppSidebar } from "./app-sidebar";
 import { 
   SidebarProvider, 
   SidebarInset, } from "@/components/ui/sidebar";
-import ThemeToggle from "@/components/ui/theme-toggle";
 
 export function Layout({ children }) {
   const { user } = useAuth()
