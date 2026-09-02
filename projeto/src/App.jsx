@@ -5,7 +5,7 @@ import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
-import { DashboardAluno } from './pages/aluno/DashboardAluno';
+import { LayoutEstagiario } from './pages/aluno/layoutaluno';
 import { ThemeProvider } from './components/theme-provider';
 
 const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
@@ -31,7 +31,7 @@ export default function App() {
             path="/aluno/*" 
             element={
               <ProtectedRoute allowedRoles={[roles.ALUNO]}>
-                <DashboardAluno/>
+                <LayoutEstagiario />
               </ProtectedRoute>
             } 
           />
