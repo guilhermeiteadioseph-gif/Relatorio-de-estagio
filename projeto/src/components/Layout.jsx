@@ -11,7 +11,7 @@ export function Layout({ children }) {
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
           <SidebarInset className="transition-[margin-left] duration-200 ease-linear md:peer-data-[state=expanded]:ml-[var(--sidebar-width)] md:peer-data-[state=collapsed]:ml-[var(--sidebar-width-icon)]">
-            {/* 2. Header Superior com Breadcrumb e Toggle */}
+            {/* Header Superior */}
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-medium text-slate-900 md:peer-data-[state=collapsed]:hidden">
@@ -19,7 +19,7 @@ export function Layout({ children }) {
                 </h2>
               </div>
             </header>
-            <main className="p-6">
+            <main className="p-6 bg-slate-50 min-h-[calc(100vh-4rem)]">
               {children}
             </main>
           </SidebarInset>

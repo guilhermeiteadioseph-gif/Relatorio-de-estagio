@@ -2,16 +2,17 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useFrequencia } from "../../contexts/FrequenciaContext";
 import { Layout } from "../../components/Layout";
-import UploadBox from "../../components/uploadbox";
-import { Navigate, useParams } from "react-router";
+import { Navigate, useParams, useNavigate } from "react-router";
 import { StatCard } from "../../components/statcard";
 import { StatusBadge } from "../../components/statusbadge";
 import DataTable from "../../components/datatable";
+import { Calendar, CheckCircle, Clock, FileText, ArrowRight, Download, Edit3 } from 'lucide-react';
 
 // Seções (podem ser funções separadas no mesmo arquivo)
 function PainelSection() {
   const { user } = useAuth(); // Obtém o usuário logado do contexto de autenticação
   const { frequencias = [] } = useFrequencia();
+  const navigate = useNavigate();
 
   // helper para formatar data simples
   const formatDate = (iso) => {
@@ -44,6 +45,30 @@ function PainelSection() {
     desc: f.descricao || f.atividade || f.titulo || f.conteudo || '',
     rawStatus: f.status
   }));
+
+  const exportRecentAsPDF = () => {
+    // cria uma janela imprimível com uma tabela simples das frequências recentes
+    const rows = recentRows;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Frequências Recentes</title><style>body{font-family: Arial, Helvetica, sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{padding:8px;border:1px solid #ddd;text-align:left}th{background:#f7fafc}</style></head><body><h2>Frequências Recentes</h2><table><thead><tr><th>Data</th><th>Horário</th><th>Descrição</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.date}</td><td>${r.time || '-'}</td><td>${r.desc}</td><td>${r.rawStatus || '-'}</td></tr>`).join('')}</tbody></table></body></html>`;
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+  };
+
+  const exportRelatorioAsPDF = () => {
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Relatório Final</title></head><body><h2>Relatório Final</h2><p>Relatório final do aluno: ${user?.name || '—'}</p></body></html>`;
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -79,10 +104,10 @@ function PainelSection() {
 
       {/* Stats row using StatCard component */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <StatCard title="FREQ. REGISTRADAS" value={frequencias.length} description="" />
-        <StatCard title="APROVADAS" value={aprovadasCount} description="" />
-        <StatCard title="PENDENTES" value={pendentesCount} description="" />
-        <StatCard title="RELATÓRIOS ENVIADOS" value={relatoriosCount} description="" />
+        <StatCard title="FREQ. REGISTRADAS" value={frequencias.length} description="" icon={Calendar} />
+        <StatCard title="APROVADAS" value={aprovadasCount} description="" icon={CheckCircle} />
+        <StatCard title="PENDENTES" value={pendentesCount} description="" icon={Clock} />
+        <StatCard title="RELATÓRIOS ENVIADOS" value={relatoriosCount} description="" icon={FileText} />
       </div>
 
       {/* Relatório Final card */}
@@ -91,7 +116,7 @@ function PainelSection() {
           <div>
             <h3 className="font-semibold">Relatório Final</h3>
             <div className="mt-3 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-md p-3 flex items-center gap-3">
-              <span className="text-lg">🔖</span>
+              <CheckCircle className="h-5 w-5 text-emerald-600" />
               <div>
                 <div className="text-sm">Aprovado com nota <span className="font-semibold">9,5</span></div>
               </div>
@@ -99,8 +124,8 @@ function PainelSection() {
           </div>
 
           <div className="flex-shrink-0 flex items-center gap-2">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm">✏️ Editar Relatório Final</button>
-            <button className="bg-slate-100 text-slate-700 px-3 py-2 rounded-md text-sm">📤 Exportar PDF (CETEP)</button>
+            <button onClick={() => navigate('/aluno/documentos')} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center gap-2"><Edit3 className="h-4 w-4"/>Editar Relatório Final</button>
+            <button onClick={exportRelatorioAsPDF} className="bg-slate-100 text-slate-700 px-3 py-2 rounded-md text-sm flex items-center gap-2"><Download className="h-4 w-4"/>Exportar PDF (CETEP)</button>
           </div>
         </div>
       </div>
@@ -110,8 +135,8 @@ function PainelSection() {
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-semibold">Frequências Recentes</h4>
           <div className="flex items-center gap-3">
-            <button className="text-sm text-slate-500">Ver todas →</button>
-            <button className="bg-slate-100 text-slate-700 px-3 py-2 rounded-md text-sm">Exportar PDF</button>
+            <button onClick={() => navigate('/aluno/frequencias')} className="text-sm text-slate-500 flex items-center gap-2">Ver todas <ArrowRight className="h-4 w-4"/></button>
+            <button onClick={exportRecentAsPDF} className="bg-slate-100 text-slate-700 px-3 py-2 rounded-md text-sm flex items-center gap-2"><Download className="h-4 w-4"/>Exportar PDF</button>
           </div>
         </div>
 

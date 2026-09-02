@@ -16,19 +16,12 @@ function DropdownMenuPortal({
   return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
-<<<<<<< HEAD
-const DropdownMenuTrigger = React.forwardRef(({ children, className, ...props }, ref) => {
-=======
 const DropdownMenuTrigger = React.forwardRef(({ render, children, className, ...props }, ref) => {
->>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
   return (
     <MenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
       ref={ref}
-<<<<<<< HEAD
-=======
       render={render}
->>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
       className={className}
       {...props}
     >

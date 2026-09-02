@@ -1,8 +1,8 @@
 import {
     User, Clock, FileText, CheckSquare,
-    GraduationCap, ClipboardCheck, MessageSquare,
+    GraduationCap, ClipboardCheck,
     Building, CheckCircle,
-    Users, Settings, BarChart3,
+    Users, Settings,
     LayoutPanelLeft
 } from 'lucide-react';
 
@@ -10,11 +10,8 @@ export const navigationItems = {
     aluno: [
         { title: 'Painel', url: '/aluno/painel', icon: LayoutPanelLeft },
         { title: 'Minhas Frequências', url: '/aluno/frequencias', icon: User },
-        { title: 'Registrar Frequência', url: '/aluno/frequencia/registrar', icon: Clock },
         { title: 'Documentos e Relatórios', url: '/aluno/documentos', icon: FileText },
         { title: 'Autoavaliação', url: '/aluno/autoavaliação', icon: CheckSquare },
-        { title: 'Avaliação do Supervisor', url: '/aluno/avaliacao-supervisor', icon: CheckSquare },
-        { title: 'Avaliação do Professor', url: '/aluno/avaliacao-professor', icon: CheckSquare },
         { title: 'Configurações', url: '/aluno/configuracoes', icon: Settings },
     ],
     supervisor: [
