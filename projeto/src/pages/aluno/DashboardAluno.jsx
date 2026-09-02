@@ -4,6 +4,9 @@ import { useFrequencia } from "../../contexts/FrequenciaContext";
 import { Layout } from "../../components/Layout";
 import UploadBox from "../../components/uploadbox";
 import { Navigate, useParams } from "react-router";
+import { StatCard } from "../../components/statcard";
+import { StatusBadge } from "../../components/statusbadge";
+import DataTable from "../../components/datatable";
 
 // Seções (podem ser funções separadas no mesmo arquivo)
 function PainelSection() {
@@ -19,29 +22,52 @@ function PainelSection() {
     }
   };
 
+  // normaliza possíveis valores de status vindos do backend/mocks
+  const normalizeStatus = (s) => {
+    if (!s) return '';
+    const ss = String(s).toLowerCase();
+    if (['aprovado', 'aprovada', 'concluído', 'concluido', 'presente'].includes(ss)) return 'Aprovado';
+    if (['pendente', 'pending'].includes(ss)) return 'Pendente';
+    if (['rejeitado', 'recusado', 'reprovado', 'ausente'].includes(ss)) return 'Rejeitado';
+    // fallback: capitalize first
+    return String(s).charAt(0).toUpperCase() + String(s).slice(1);
+  };
+
+  const aprovadasCount = frequencias.filter(f => normalizeStatus(f.status) === 'Aprovado').length;
+  const pendentesCount = frequencias.filter(f => normalizeStatus(f.status) === 'Pendente').length;
+  const relatoriosCount = (user && user.relatorios && user.relatorios.length) || 0;
+
+  // mapeia frequências para o formato da tabela
+  const recentRows = (frequencias || []).slice().reverse().slice(0,5).map(f => ({
+    date: formatDate(f.data || f.date || f.createdAt || f.dateRegistro),
+    time: f.horario || (f.horaEntrada && f.horaSaida ? `${f.horaEntrada}–${f.horaSaida}` : ''),
+    desc: f.descricao || f.atividade || f.titulo || f.conteudo || '',
+    rawStatus: f.status
+  }));
+
   return (
     <div className="space-y-6">
       {/* Top info card */}
       <div className="bg-white border rounded-lg shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="text-sm text-slate-500">Empresa</div>
-          <div className="font-semibold text-slate-800">TechSoft Solutions Ltda</div>
+          <div className="font-semibold text-slate-800">{user?.empresa || user?.company || 'TechSoft Solutions Ltda'}</div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <div className="text-sm text-slate-500">Curso</div>
-              <div className="font-medium">Técnico em Informática</div>
+              <div className="font-medium">{user?.curso || 'Técnico em Informática'}</div>
             </div>
             <div>
               <div className="text-sm text-slate-500">Período</div>
-              <div className="font-medium">01/02/2025 — 30/11/2025</div>
+              <div className="font-medium">{user?.periodo || '01/02/2025 — 30/11/2025'}</div>
             </div>
             <div>
               <div className="text-sm text-slate-500">Horas cumpridas</div>
               <div className="flex items-center gap-3">
-                <div className="text-sm font-medium">187/400h</div>
+                <div className="text-sm font-medium">{user?.horasCumpridas || '187'}/{user?.horasTotais || '400'}h</div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{width: '47%'}} />
+                  <div className="bg-blue-500 h-2 rounded-full" style={{width: `${Math.round(((user?.horasCumpridas||187)/(user?.horasTotais||400))*100)}%`}} />
                 </div>
               </div>
             </div>
@@ -51,39 +77,12 @@ function PainelSection() {
         <div className="text-right text-sm text-slate-400">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
       </div>
 
-      {/* Stats row */}
+      {/* Stats row using StatCard component */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-white border rounded-lg p-4 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-sm text-slate-500">FREQ. REGISTRADAS</div>
-            <div className="text-2xl font-bold">{frequencias.length}</div>
-          </div>
-          <div className="text-slate-300 text-2xl">📅</div>
-        </div>
-
-        <div className="bg-white border rounded-lg p-4 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-sm text-slate-500">APROVADAS</div>
-            <div className="text-2xl font-bold">3</div>
-          </div>
-          <div className="text-2xl text-green-400">✅</div>
-        </div>
-
-        <div className="bg-white border rounded-lg p-4 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-sm text-slate-500">PENDENTES</div>
-            <div className="text-2xl font-bold">2</div>
-          </div>
-          <div className="text-2xl text-orange-300">⏳</div>
-        </div>
-
-        <div className="bg-white border rounded-lg p-4 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-sm text-slate-500">RELATÓRIOS ENVIADOS</div>
-            <div className="text-2xl font-bold">2</div>
-          </div>
-          <div className="text-2xl text-purple-300">📄</div>
-        </div>
+        <StatCard title="FREQ. REGISTRADAS" value={frequencias.length} description="" />
+        <StatCard title="APROVADAS" value={aprovadasCount} description="" />
+        <StatCard title="PENDENTES" value={pendentesCount} description="" />
+        <StatCard title="RELATÓRIOS ENVIADOS" value={relatoriosCount} description="" />
       </div>
 
       {/* Relatório Final card */}
@@ -116,27 +115,20 @@ function PainelSection() {
           </div>
         </div>
 
-        <div className="divide-y">
-          {frequencias.slice(0,5).map((f, idx) => (
-            <div key={idx} className="py-4 flex items-start justify-between gap-4">
-              <div>
-                <div className="text-sm font-medium">{formatDate(f.data)}</div>
-                <div className="text-xs text-slate-500 mt-1">{f.horario || '08:00–12:00'} • {f.descricao?.slice(0,100) || '—'}</div>
-              </div>
-
-              <div className="flex-shrink-0">
-                {/* status badge */}
-                {f.status === 'aprovado' && <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Aprovado</span>}
-                {f.status === 'pendente' && <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Pendente</span>}
-                {!f.status && <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full">—</span>}
-              </div>
-            </div>
-          ))}
-
-          {frequencias.length === 0 && (
-            <div className="py-4 text-sm text-slate-500">Nenhuma frequência registrada ainda.</div>
-          )}
-        </div>
+        <DataTable
+          columns={[
+            { key: 'date', label: 'Data' },
+            { key: 'time', label: 'Horário' },
+            { key: 'desc', label: 'Descrição' },
+            {
+              key: 'status',
+              label: 'Status',
+              render: (_, row) => <StatusBadge status={normalizeStatus(row.rawStatus)} />
+            }
+          ]}
+          data={recentRows}
+          emptyMessage="Nenhuma frequência registrada ainda."
+        />
       </div>
     </div>
   );
