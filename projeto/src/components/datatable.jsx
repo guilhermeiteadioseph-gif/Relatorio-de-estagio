@@ -13,8 +13,8 @@ export default function DataTable({ columns, data, emptyMessage = "Nenhum regist
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="rounded-md border bg-white">
+      <Table className="min-w-full">
         <TableHeader>
           <TableRow>
             {columns.map((col) => (
