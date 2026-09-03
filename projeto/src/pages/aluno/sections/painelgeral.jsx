@@ -35,7 +35,7 @@ export default function PainelGeral() {
       <h1 className="text-2xl font-bold text-slate-800">Visão Geral do Estágio</h1>
 
       {/* 1. Card Superior: Informações do Aluno */}
-      <Card>
+      <Card className="bg-white border-slate-50">
         <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
           <div>
             <p className="text-sm text-slate-500">Empresa</p>

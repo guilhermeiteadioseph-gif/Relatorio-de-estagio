@@ -12,14 +12,14 @@ export function Layout({ children }) {
         <AppSidebar />
           <SidebarInset className="transition-[margin-left] duration-200 ease-linear md:peer-data-[state=expanded]:ml-[var(--sidebar-width)] md:peer-data-[state=collapsed]:ml-[var(--sidebar-width-icon)]">
             {/* Header Superior */}
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4" style={{ backgroundColor: '#f5f9fd' }}>
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-medium text-slate-900 md:peer-data-[state=collapsed]:hidden">
                   {user?.role ? `Painel do ${user.role}` : 'Sistema Escolar'}
                 </h2>
               </div>
             </header>
-            <main className="p-6 bg-slate-50 min-h-[calc(100vh-4rem)]" style={{ backgroundColor: '#f5f9fd' }}>
+            <main className="p-6 min-h-[calc(100vh-4rem)]" style={{ backgroundColor: '#f6f8fa' }}>
               {children}
             </main>
           </SidebarInset>
