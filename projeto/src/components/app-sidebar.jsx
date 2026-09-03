@@ -67,7 +67,7 @@ export function AppSidebar() {
           {/* Logo e Título do Sistema */}
           <div className="flex items-center gap-3 px-1 group-data-[collapsible=icon]:justify-center">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="size-5 text-slate-100" />
+              <GraduationCap className="size-5 text-sidebar-foreground" />
             </div>
             <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
               <span className="font-semibold text-sm tracking-tight text-sidebar-foreground">
