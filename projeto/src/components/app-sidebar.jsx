@@ -69,47 +69,17 @@ export function AppSidebar() {
         {/* 1. CABEÇALHO DA SIDEBAR */}
         <SidebarHeader className="px-5 py-5 border-b border-white/10 group-data-[collapsible=icon]:p-2">
           {/* Logo e Título do Sistema */}
-          <div className="flex items-center justify-between w-full group-data-[collapsible=icon]:hidden">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex aspect-square w-8 h-8 flex-shrink-0 items-center justify-center rounded-lg bg-blue-700">
-                <GraduationCap size={16} className="text-white" />
-              </div>
-              <div className="min-w-0 flex flex-col">
-                <span className="text-white font-bold text-sm">
-                  SIGET
-                </span>
-                <span className="text-blue-300/70 text-[10px] leading-tight truncate capitalize">
-                  CETEP Araci
-                </span>
-              </div>
+          <div className="flex items-center gap-3 px-1 group-data-[collapsible=icon]:justify-center">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <GraduationCap className="size-5 text-slate-100" />
             </div>
-            <SidebarTrigger className="cursor-pointer shrink-0 text-white" />
-          </div>
-          
-            {/* Sidebar colapsada */}
-          <div className="hidden group-data-[collapsible=icon]:flex items-center justify-center w-full">
-            <div className="relative h-8 w-8 group/gemini flex shrink-0 aspect-square items-center justify-center">
-
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-blue-700 transition-opacity duration-200 group-hover/gemini:opacity-0 group-hover/gemini:pointer-events-none">
-                <GraduationCap size={16} className="text-white" />
-              </div>
-
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/gemini:opacity-100">
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger 
-                      render={<SidebarTrigger className="h-8 w-8 rounded-lg bg-zinc-800 text-white hover:bg-zinc-700 hover:text-white"/>}
-                    />
-                    <TooltipContent
-                      side="right" 
-                      sideOffset={16}
-                      className="rounded-xl border-none bg-[#e3e3e3] px-4 py-2 text-sm font-medium text-black shadow-md"
-                    >
-                      <p>Expandir menu</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+            <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+              <span className="font-semibold text-sm tracking-tight text-sidebar-foreground">
+                SIGET
+              </span>
+              <span className="text-[10px] text-sidebar-foreground/60 capitalize">
+                CETEP Araci
+              </span>
             </div>
           </div>
 
