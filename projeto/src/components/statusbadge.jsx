@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 
-export function StatusBadge({ status = '' }) {
+export default function StatusBadge({ status = '' }) {
     const CurrentStatus = String(status).toLowerCase();
     
     if (['aprovado', 'aprovada', 'concluído', 'concluido', 'presente'].includes(CurrentStatus)) {

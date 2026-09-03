@@ -5,8 +5,7 @@ import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
-import { DashboardAluno } from './pages/aluno/DashboardAluno';
-import { ThemeProvider } from './components/theme-provider';
+import LayoutEstagiario from './pages/aluno/layoutaluno';
 
 const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
@@ -28,10 +27,19 @@ export default function App() {
           <Route path="/access-denied" element={<AccessDeniedPage />} />
           
             <Route 
-            path="/aluno/*" 
+            path="/aluno" 
             element={
               <ProtectedRoute allowedRoles={[roles.ALUNO]}>
-                <DashboardAluno/>
+                <LayoutEstagiario />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/aluno/:tab" 
+            element={
+              <ProtectedRoute allowedRoles={[roles.ALUNO]}>
+                <LayoutEstagiario />
               </ProtectedRoute>
             } 
           />

@@ -7,9 +7,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function DataTable({ columns, data, emptyMessage = "Nenhum registro encontrado." }) {
-  if (!data || data.length === 0) {
+export default function DataTable({
+  columns = [],
+  data = [],
+  emptyMessage = "Nenhum registro encontrado.",
+}) {
+  const safeColumns = Array.isArray(columns) ? columns : [];
+  const safeData = Array.isArray(data) ? data : [];
+
+  if (safeData.length === 0) {
     return <p className="text-center text-gray-500 py-4">{emptyMessage}</p>;
+  }
+
+  if (safeColumns.length === 0) {
+    return <p className="text-center text-gray-500 py-4">Defina as colunas da tabela antes de renderizá-la.</p>;
   }
 
   return (
@@ -17,7 +28,7 @@ export default function DataTable({ columns, data, emptyMessage = "Nenhum regist
       <Table className="min-w-full">
         <TableHeader>
           <TableRow>
-            {columns.map((col) => (
+            {safeColumns.map((col) => (
               <TableHead key={col.key} className="font-semibold">
                 {col.label}
               </TableHead>
@@ -25,9 +36,9 @@ export default function DataTable({ columns, data, emptyMessage = "Nenhum regist
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((row, rowIndex) => (
+          {safeData.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              {columns.map((col) => (
+              {safeColumns.map((col) => (
                 <TableCell key={col.key}>
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </TableCell>
