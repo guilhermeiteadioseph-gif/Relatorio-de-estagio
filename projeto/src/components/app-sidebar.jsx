@@ -9,9 +9,8 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
-  SidebarInput,
+  SidebarTrigger,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,6 +19,13 @@ import {
   SidebarMenuSubItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   DropdownMenu,
@@ -31,8 +37,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import {
-  Search,
-  Settings,
   User,
   LogOut,
   GraduationCap,
@@ -61,13 +65,13 @@ export function AppSidebar() {
     }
 
     return (
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="icon" className="w-60 flex-shrink-0 flex flex-col shadow-lg z-10" style={{ backgroundColor: '#0F2744' }}>
         {/* 1. CABEÇALHO DA SIDEBAR */}
-        <SidebarHeader className="p-4 gap-4">
+        <SidebarHeader className="px-5 py-5 border-b border-white/10 group-data-[collapsible=icon]:p-2">
           {/* Logo e Título do Sistema */}
           <div className="flex items-center gap-3 px-1 group-data-[collapsible=icon]:justify-center">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="size-5 text-sidebar-foreground" />
+              <GraduationCap className="size-5 text-slate-100" />
             </div>
             <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
               <span className="font-semibold text-sm tracking-tight text-sidebar-foreground">
@@ -78,15 +82,19 @@ export function AppSidebar() {
               </span>
             </div>
           </div>
+
+        <SidebarSeparator className="bg-white/10 hidden" />
         </SidebarHeader>
 
-        <SidebarSeparator />
-
-        {/* 2. CONTEÚDO PRINCIPAL (Mapeamento Dinâmico do navigation.js) */}
-        <SidebarContent className="px-2 py-3">
+        {/* 2. CONTEÚDO PRINCIPAL */}
+<<<<<<< HEAD
+        <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto group-data-[collapsible=icon]:p-2">
+          <SidebarGroup className="p-0">
+=======
+        <SidebarContent className="flex-1 px-2.5 py-3 overflow-y-auto ">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-3">Menu Principal</SidebarGroupLabel>
-            <SidebarGroupContent>
+>>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
+            <SidebarGroupContent className="space-y-0.5">
               <SidebarMenu>
                 {navItems
                   .filter(i => !(i.title || "").toLowerCase().includes('configura'))
@@ -103,10 +111,11 @@ export function AppSidebar() {
                         <SidebarMenuButton 
                           onClick={() => toggleSubmenu(item.id)}
                           tooltip={item.title}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left group/item group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 ${isActive ? 'bg-white/15 text-white' : 'text-slate-300/80 hover:text-white hover:bg-white/8'}`}
                         >
-                          {Icon && <Icon className="text-sidebar-foreground/70" />}
-                          <span>{item.title}</span>
-                          <ChevronDown className={`ml-auto size-3.5 transition-transform duration-200 ${isSubOpen ? "rotate-180" : ""}`} />
+                          {Icon && <Icon size={15} className={`shrink-0 ${isActive ? 'text-blue-300' : 'text-slate-400 group-hover/item:text-slate-200'}`} />}
+                          <span className="group-data-[collapsible=icon]:hidden truncate">{item.title}</span>
+                          <ChevronDown className={`group-data-[collapsible=icon]:hidden ml-auto size-[15px] text-slate-400 transition-transform duration-200 ${isSubOpen ? "rotate-180" : ""}`} />
                         </SidebarMenuButton>
 
                         {isSubOpen && (
@@ -116,8 +125,9 @@ export function AppSidebar() {
                                 <SidebarMenuSubButton 
                                   onClick={() => navigate(subItem.url)}
                                   isActive={location.pathname === subItem.url}
+                                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all text-left group mt-0.5 ${location.pathname === subItem.url ? 'bg-white/15 text-white' : 'text-slate-300/80 hover:text-white hover:bg-white/8'}`}
                                 >
-                                  <span>{subItem.title}</span>
+                                  <span className="group-data-[collapsible=icon]:hidden truncate">{subItem.title}</span>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
@@ -134,9 +144,10 @@ export function AppSidebar() {
                         onClick={() => navigate(item.url)}
                         isActive={isActive}
                         tooltip={item.title}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left group/item group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 ${isActive ? 'bg-white/15 text-white' : 'text-slate-300/80 hover:text-white hover:bg-white/8'}`}
                       >
-                        {Icon && <Icon className="text-sidebar-foreground/70" />}
-                        <span>{item.title}</span>
+                          {Icon && <Icon size={15} className={`shrink-0 ${isActive ? 'text-blue-300' : 'text-slate-400 group-hover/item:text-slate-200'}`} />}
+                        <span className="group-data-[collapsible=icon]:hidden truncate">{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   )
@@ -146,25 +157,27 @@ export function AppSidebar() {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarSeparator />
+        <SidebarSeparator className="bg-white/10 hidden" />
 
         {/* 3. RODAPÉ (PERFIL DO USUÁRIO LOGADO E LOGOUT) */}
-        <SidebarFooter className="p-3">
-          <SidebarMenu>
-            {/* Configurações (usa rota definida em navigation.js) */}
+        <SidebarFooter className="px-2.5 py-3 border-t border-white/10 group-data-[collapsible=icon]:p-2">
+          <SidebarMenu className="space-y-0.5">
+            {/* Configurações */}
             {(() => {
               const configItem = navItems.find(i => (i.title || "").toLowerCase().includes('configura'));
               if (!configItem) return null;
               const Icon = configItem.icon;
+              const isActive = location.pathname === configItem.url;
               return (
                 <SidebarMenuItem key={configItem.url}>
                   <SidebarMenuButton
                     onClick={() => navigate(configItem.url)}
                     tooltip={configItem.title}
-                    isActive={location.pathname === configItem.url}
+                    isActive={isActive}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left group/item group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 ${isActive ? 'bg-white/15 text-white' : 'text-slate-300/80 hover:text-white hover:bg-white/8'}`}
                   >
-                    {Icon && <Icon className="text-sidebar-foreground/70" />}
-                    <span>{configItem.title}</span>
+                    {Icon && <Icon size={15} className={`shrink-0 ${isActive ? 'text-blue-300' : 'text-slate-400 group-hover/item:text-slate-200'}`} />}
+                    <span className="group-data-[collapsible=icon]:hidden truncate">{configItem.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )
@@ -173,42 +186,31 @@ export function AppSidebar() {
             {/* Perfil do Usuário com menu */}
             <DropdownMenu>
               <SidebarMenuItem>
-                <DropdownMenuTrigger asChild>
-                  <div className="group/menu-item relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sidebar-accent-foreground/10">
-                      <User className="size-4 text-sidebar-foreground" />
-                    </div>
-                    <div className="flex flex-col text-left leading-none ml-1 truncate group-data-[collapsible=icon]:hidden">
-                      <span className="font-medium text-xs truncate">
-                        {user?.nome || 'Usuário'}
-                      </span>
-                      <span className="text-[10px] text-sidebar-foreground/50 mt-0.5 truncate">
-                        {user?.email || 'usuario@cetep.edu.br'}
-                      </span>
-                    </div>
+                <DropdownMenuTrigger className="group/menu-item relative flex w-full cursor-pointer items-center gap-2.5 px-3 py-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 overflow-hidden rounded-lg text-left text-xs font-medium transition-all text-slate-300/80 hover:text-white hover:bg-white/8 outline-hidden data-[state=open]:bg-white/8">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-slate-400 group-hover/menu-item:text-slate-200 transition-colors">
+                    <User size={15} />
+                  </div>
+                  <div className="min-w-0 flex flex-col text-left leading-none truncate group-data-[collapsible=icon]:hidden">
+                    <span className="text-white text-xs font-semibold leading-tight truncate">
+                      {user?.nome || 'Usuário'}
+                    </span>
+                    <span className="text-blue-300/70 text-[10px] leading-tight truncate mt-0.5">
+                      {user?.email || 'usuario@example.com'}
+                    </span>
                   </div>
                 </DropdownMenuTrigger>
               </SidebarMenuItem>
-              <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel>{user?.nome || 'Usuário'}</DropdownMenuLabel>
-                {(() => {
-                  const configItem = navItems.find(i => (i.title || "").toLowerCase().includes('configura'));
-                  if (!configItem) return null;
-                  return (
-                    <DropdownMenuItem
-                      className="gap-2"
-                      onSelect={() => navigate(configItem.url)}>
-                      <Settings className="size-4" />
-                      Configurações
-                    </DropdownMenuItem>
-                  )
-                })()}
-                <DropdownMenuSeparator />
+
+              <DropdownMenuContent side="right" align="center" sideOffset={8} className="w-56 bg-[#0F2744] border border-white/10 shadow-xl rounded-lg p-1">
+                <DropdownMenuLabel className="text-white/40 text-[10px] uppercase tracking-wider font-medium px-2 py-1.5">
+                  {user?.nome || 'Usuário'}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10 my-1" />
                 <DropdownMenuItem
-                  className="gap-2"
-                  onSelect={handleLogout}>
-                  <LogOut className="size-4" />
-                  Sair
+                  className="flex items-center gap-2.5 px-2 py-2 rounded-md text-xs font-medium transition-all text-slate-400 hover:text-white hover:bg-white/8 cursor-pointer focus:bg-white/8 focus:text-white"
+                  onClick={handleLogout}>
+                  <LogOut size={15} />
+                  Sair da conta
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -16,11 +16,26 @@ function DropdownMenuPortal({
   return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
-function DropdownMenuTrigger({
-  ...props
-}) {
-  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />;
-}
+<<<<<<< HEAD
+const DropdownMenuTrigger = React.forwardRef(({ children, className, ...props }, ref) => {
+=======
+const DropdownMenuTrigger = React.forwardRef(({ render, children, className, ...props }, ref) => {
+>>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
+  return (
+    <MenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      ref={ref}
+<<<<<<< HEAD
+=======
+      render={render}
+>>>>>>> 97a1caed5cbd45b503c38813bdcde1608a16bd85
+      className={className}
+      {...props}
+    >
+      {children}
+    </MenuPrimitive.Trigger>
+  )
+});
 
 function DropdownMenuContent({
   align = "start",
@@ -56,13 +71,12 @@ function DropdownMenuGroup({
   return <MenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
 }
 
-function DropdownMenuLabel({
-  className,
-  inset,
-  ...props
-}) {
+function DropdownMenuLabel({ className, inset, ...props }) {
+  // Render a simple label element instead of MenuPrimitive.GroupLabel to
+  // avoid Base UI errors when not inside a <Menu.Group>. This keeps visual
+  // styling while being safe in all contexts.
   return (
-    <MenuPrimitive.GroupLabel
+    <div
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
@@ -70,7 +84,7 @@ function DropdownMenuLabel({
         className
       )}
       {...props} />
-  );
+  )
 }
 
 function DropdownMenuItem({
@@ -98,12 +112,16 @@ function DropdownMenuSub({
   return <MenuPrimitive.SubmenuRoot data-slot="dropdown-menu-sub" {...props} />;
 }
 
-function DropdownMenuSubTrigger({
-  className,
-  inset,
-  children,
-  ...props
-}) {
+const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, asChild = false, ...props }, ref) => {
+  if (asChild) {
+    return (
+      <MenuPrimitive.SubmenuTrigger data-slot="dropdown-menu-sub-trigger" data-inset={inset} asChild ref={ref} className={className} {...props}>
+        {children}
+        <ChevronRightIcon className="ml-auto" />
+      </MenuPrimitive.SubmenuTrigger>
+    )
+  }
+
   return (
     <MenuPrimitive.SubmenuTrigger
       data-slot="dropdown-menu-sub-trigger"
@@ -112,12 +130,13 @@ function DropdownMenuSubTrigger({
         "flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-popup-open:bg-accent data-popup-open:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
+      ref={ref}
       {...props}>
       {children}
       <ChevronRightIcon className="ml-auto" />
     </MenuPrimitive.SubmenuTrigger>
-  );
-}
+  )
+});
 
 function DropdownMenuSubContent({
   align = "start",
