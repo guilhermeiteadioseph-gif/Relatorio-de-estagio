@@ -23,9 +23,7 @@ export const navigationItems = {
         { title: 'Configurações', url: '/supervisor/configuracoes', icon: Settings },
     ],
     professor: [
-        { title: 'Painel', url: '/professor/painel', icon: LayoutPanelLeft },
         { title: 'Meus Orientandos', url: '/professor/orientandos', icon: User },
-        { title: 'Documentos e Relatórios', url: '/professor/relatorios', icon: FileText },
         { title: 'Avaliação de Estágio', url: '/professor/avaliacao-estagio', icon: CheckSquare },
         { title: 'Configurações', url: '/professor/configuracoes', icon: Settings },
     ],

@@ -6,8 +6,8 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
 import LayoutEstagiario from './pages/aluno/layoutaluno';
+import LayoutProfessor from './pages/professor/layoutprofessor';
 
-const DashboardProfessor = () => <h2>Dashboard do Professor</h2>;
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
 const DashboardSupervisor = () => <h2>Dashboard do Supervisor</h2>;
 const DashboardAssistente = () => <h2>Dashboard do Assistente</h2>;
@@ -45,10 +45,18 @@ export default function App() {
           />
           
           <Route 
-            path="/professor/*" 
+            path="/professor" 
             element={
               <ProtectedRoute allowedRoles={[roles.PROFESSOR]}>
-                <DashboardProfessor />
+                <LayoutProfessor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/professor/:tab" 
+            element={
+              <ProtectedRoute allowedRoles={[roles.PROFESSOR]}>
+                <LayoutProfessor />
               </ProtectedRoute>
             } 
           />
