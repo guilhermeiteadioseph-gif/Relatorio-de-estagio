@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout"
 
 // Importação das abas
 import PainelGeral from "./sections/painel"
+import AvaliacaoEstagiario from "./sections/avaliacaoestag"
 
 export default function LayoutProfessor() {
   const { tab } = useParams()
@@ -10,8 +11,8 @@ export default function LayoutProfessor() {
   const renderTab = () => {
     switch (tab ?? "orientandos") {
       case "orientandos": return <PainelGeral />
-      default:
-        return <Navigate to="/professor/orientandos" replace />
+      case "avaliacao-estagio": return <AvaliacaoEstagiario />
+      case undefined: return <Navigate to="/professor/orientandos" replace />
     }
   }
 
