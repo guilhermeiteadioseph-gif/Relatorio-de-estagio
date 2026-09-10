@@ -17,14 +17,12 @@ export const navigationItems = {
     supervisor: [
         { title: 'Painel', url: '/supervisor/painel', icon: LayoutPanelLeft },
         { title: 'Meus Estagiários', url: '/supervisor/estagiarios', icon: User },
-        { title: 'Documentos e Relatórios', url: '/supervisor/relatorios', icon: FileText },
         { title: 'Frequências', url: '/supervisor/frequencias', icon: Clock },
-        { title: 'Validação do Estágio', url: '/supervisor/estagiarios/validacao', icon: Clock },
+        { title: 'Avaliação do Estágio', url: '/supervisor/avaliacao', icon: Clock },
         { title: 'Configurações', url: '/supervisor/configuracoes', icon: Settings },
     ],
     professor: [
         { title: 'Meus Orientandos', url: '/professor/orientandos', icon: User },
-        { title: 'Avaliação de Estágio', url: '/professor/avaliacao-estagio', icon: CheckSquare },
         { title: 'Configurações', url: '/professor/configuracoes', icon: Settings },
     ],
     assistente: [

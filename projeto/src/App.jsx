@@ -5,11 +5,12 @@ import { FrequenciaProvider } from './contexts/FrequenciaContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
+
 import LayoutEstagiario from './pages/aluno/layoutaluno';
 import LayoutProfessor from './pages/professor/layoutprofessor';
+import LayoutSupervisor from './pages/supervisor/layoutsupervisor';
 
 const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
-const DashboardSupervisor = () => <h2>Dashboard do Supervisor</h2>;
 const DashboardAssistente = () => <h2>Dashboard do Assistente</h2>;
 const AccessDeniedPage = () => <h2>Acesso Negado</h2>;
 
@@ -60,6 +61,24 @@ export default function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route 
+            path="/supervisor" 
+            element={
+              <ProtectedRoute allowedRoles={[roles.SUPERVISOR]}>
+                <LayoutSupervisor />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/supervisor/:tab" 
+            element={
+              <ProtectedRoute allowedRoles={[roles.SUPERVISOR]}>
+                <LayoutSupervisor />
+              </ProtectedRoute>
+            } 
+          />
           
           <Route 
             path="/vice-diretor/*" 
@@ -70,14 +89,6 @@ export default function App() {
             } 
           />
           
-          <Route 
-            path="/supervisor/*" 
-            element={
-              <ProtectedRoute allowedRoles={[roles.SUPERVISOR]}>
-                <DashboardSupervisor />
-              </ProtectedRoute>
-            } 
-          />
           
           <Route 
             path="/assistente/*" 
