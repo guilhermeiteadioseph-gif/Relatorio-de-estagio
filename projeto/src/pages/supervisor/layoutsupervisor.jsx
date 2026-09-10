@@ -1,27 +1,30 @@
 import { useParams, Navigate } from "react-router"
 import { Layout } from "@/components/Layout"
+import { Toaster } from "@/components/ui/sonner"
+import { SupervisorDataProvider } from "./contexts/supervisorcontext"
 
 // Abas
-import AvaliacaoEstagiario from "./components/avaliacaoestag"
-
-// Toast global do painel do professor
-import { Toaster } from "@/components/ui/sonner"
+import PainelGeral from "./sections/painel"
+import AvaliacoesPage from "./sections/avaliacoes"
 
 export default function LayoutSupervisor() {
   const { tab } = useParams()
 
   const renderTab = () => {
     switch (tab ?? "painel") {
-      case "avaliacao": return <AvaliacaoEstagiario />
-      default: return <Navigate to="/supervisor/painel" replace />
+      case "painel":     return <PainelGeral />
+      case "avaliacao":  return <AvaliacoesPage />
+      default:           return <Navigate to="/supervisor/painel" replace />
     }
   }
 
   return (
-    <Layout>
-      {renderTab()}
-      {/* Toaster global — disparado por qualquer componente filho */}
-      <Toaster />
-    </Layout>
+    <SupervisorDataProvider>
+      <Layout>
+        {renderTab()}
+        {/* Toaster global — disparado por qualquer componente filho */}
+        <Toaster />
+      </Layout>
+    </SupervisorDataProvider>
   )
 }

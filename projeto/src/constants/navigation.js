@@ -16,8 +16,6 @@ export const navigationItems = {
     ],
     supervisor: [
         { title: 'Painel', url: '/supervisor/painel', icon: LayoutPanelLeft },
-        { title: 'Meus Estagiários', url: '/supervisor/estagiarios', icon: User },
-        { title: 'Frequências', url: '/supervisor/frequencias', icon: Clock },
         { title: 'Avaliação do Estágio', url: '/supervisor/avaliacao', icon: Clock },
         { title: 'Configurações', url: '/supervisor/configuracoes', icon: Settings },
     ],
