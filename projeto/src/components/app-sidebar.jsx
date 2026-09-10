@@ -81,8 +81,8 @@ export function AppSidebar() {
                 CETEP Araci
               </span>
             </div>
-          </div>
           <SidebarTrigger className="cursor-pointer shrink-0 text-white" />
+          </div>
                     
             {/* Sidebar colapsada */}
           <div className="hidden group-data-[collapsible=icon]:flex items-center justify-center w-full">
