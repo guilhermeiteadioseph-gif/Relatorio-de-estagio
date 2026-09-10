@@ -70,7 +70,7 @@ export function AppSidebar() {
         <SidebarHeader className="px-5 py-5 border-b border-white/10 group-data-[collapsible=icon]:p-2">
           {/* Logo e Título do Sistema */}
           <div className="flex items-center gap-3 px-1 group-data-[collapsible=icon]:justify-center">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#1D4ED8' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 group-data-[collapsible=icon]:hidden" style={{ backgroundColor: '#1D4ED8' }}>
               <GraduationCap className="size-5 text-white" />
             </div>
             <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
@@ -81,7 +81,7 @@ export function AppSidebar() {
                 CETEP Araci
               </span>
             </div>
-          <SidebarTrigger className="cursor-pointer shrink-0 text-white" />
+          <SidebarTrigger className="cursor-pointer shrink-0 text-white ms-auto group-data-[collapsible=icon]:hidden" />
           </div>
                     
             {/* Sidebar colapsada */}
