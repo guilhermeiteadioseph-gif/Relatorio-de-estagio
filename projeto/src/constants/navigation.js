@@ -33,13 +33,10 @@ export const navigationItems = {
     ],
     vice_diretor: [
         { title: 'Painel', url: '/vice-diretor/painel', icon: LayoutPanelLeft },
-        { title: 'Gerenciar Estagiários', url: '/vice-diretor/gerenciar-estagiarios', icon: Settings },
-        { title: 'Fichas de Frequência', url: '/vice-diretor/fichas-frequencia', icon: ClipboardCheck },
-        { title: 'Avaliações de Estágio', url: '/vice-diretor/gerenciar-avaliacoes', icon: CheckCircle },
-        { title: 'Documentos e Relatórios', url: '/vice-diretor/relatorios', icon: FileText },
-        { title: 'Usuários', url: '/vice-diretor/gerenciar-usuarios', icon: Users },
-        { title: 'Empresas', url: '/vice-diretor/gerenciar-empresas', icon: Building },
-        { title: 'Cursos', url: '/vice-diretor/gerenciar-cursos', icon: GraduationCap },
+        { title: 'Usuários', url: '/vice-diretor/usuarios', icon: Users },
+        { title: 'Fichas de Frequência', url: '/vice-diretor/frequencias', icon: ClipboardCheck },
+        { title: 'Empresas', url: '/vice-diretor/empresas', icon: Building },
+        { title: 'Cursos Técnicos', url: '/vice-diretor/cursos', icon: GraduationCap },
         { title: 'Configurações', url: '/vice-diretor/configuracoes', icon: Settings },
     ],
 }

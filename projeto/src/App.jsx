@@ -9,8 +9,8 @@ import { Navigate } from 'react-router';
 import LayoutEstagiario from './pages/aluno/layoutaluno';
 import LayoutProfessor from './pages/professor/layoutprofessor';
 import LayoutSupervisor from './pages/supervisor/layoutsupervisor';
+import LayoutViceDiretor from './pages/vice-diretor/layoutvicediretor';
 
-const DashboardViceDiretor = () => <h2>Dashboard do Vice-Diretor</h2>;
 const DashboardAssistente = () => <h2>Dashboard do Assistente</h2>;
 const AccessDeniedPage = () => <h2>Acesso Negado</h2>;
 
@@ -81,14 +81,22 @@ export default function App() {
           />
           
           <Route 
-            path="/vice-diretor/*" 
+            path="/vice-diretor" 
             element={
               <ProtectedRoute allowedRoles={[roles.VICE_DIRETOR]}>
-                <DashboardViceDiretor />
+                <LayoutViceDiretor />
               </ProtectedRoute>
             } 
           />
           
+          <Route 
+            path="/vice-diretor/:tab" 
+            element={
+              <ProtectedRoute allowedRoles={[roles.VICE_DIRETOR]}>
+                <LayoutViceDiretor />
+              </ProtectedRoute>
+            } 
+          />
           
           <Route 
             path="/assistente/*" 
