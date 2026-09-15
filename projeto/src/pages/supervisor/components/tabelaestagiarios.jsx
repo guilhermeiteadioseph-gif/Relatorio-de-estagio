@@ -24,6 +24,7 @@ import {
   ClipboardList,
   CheckCircle2,
   Search,
+  Eye,
 } from "lucide-react"
 
 /**
@@ -38,6 +39,7 @@ export default function TabelaEstagiarios({
   dados = [],
   onVerFrequencias,
   onAvaliar,
+  onVerPerfil,
 }) {
   const [busca, setBusca] = useState("")
 
@@ -166,6 +168,15 @@ export default function TabelaEstagiarios({
                       >
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+
+                        {/* Ver Informações do Perfil */}
+                        <DropdownMenuItem
+                          onClick={() => onVerPerfil?.(e)}
+                          className="cursor-pointer gap-2"
+                        >
+                          <Eye className="size-4 text-slate-500" />
+                          <span>Ver perfil</span>
+                        </DropdownMenuItem>
 
                         {/* Ver Frequências */}
                         <DropdownMenuItem

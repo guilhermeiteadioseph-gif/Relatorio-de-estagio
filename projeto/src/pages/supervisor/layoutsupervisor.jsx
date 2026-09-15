@@ -13,8 +13,6 @@ export default function LayoutSupervisor() {
   const renderTab = () => {
     switch (tab ?? "painel") {
       case "painel":     return <PainelGeral />
-      case "avaliacao":  return <AvaliacoesPage />
-      default:           return <Navigate to="/supervisor/painel" replace />
     }
   }
 

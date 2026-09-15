@@ -1,34 +1,23 @@
-/**
- * Dados mockados dos estagiários supervisionados.
- *
- * A estrutura de `questionario.respostas` segue EXATAMENTE a Ficha de
- * Avaliação de Desempenho do Estagiário (SURPROT/IF):
- *
- *   - 4 itens de avaliação da concedente + avaliação final
- *   - 7 itens de aspectos do estagiário + avaliação final
- *   - Observações
- *   - Assinatura (nome, local, data)
- *
- * Escala: "otimo" | "bom" | "regular" | "insuficiente"
- */
-
-/* Gerador simples de frequências fictícias. */
+/* Gerador simples de frequências fictícias com timestamp de registro. */
 function gerarFrequencias(qtd = 12, ano = 2026, mes = 10) {
-  const registros = []
+  const reg = []
   for (let i = 0; i < qtd; i++) {
     const dia = String(i + 1).padStart(2, "0")
     const entrada = "08:00"
     const saida = i % 5 === 4 ? "12:00" : "17:00"
     const horas = i % 5 === 4 ? 4 : 8
-    registros.push({
+    // Timestamp de quando o registro foi feito (mock: 18h do mesmo dia)
+    const registradoEm = new Date(ano, mes - 1, i + 1, 18, 0).toISOString()
+    reg.push({
       id: i + 1,
       data: `${dia}/${String(mes).padStart(2, "0")}/${ano}`,
       entrada,
       saida,
       horas,
+      registradoEm,
     })
   }
-  return registros
+  return reg
 }
 
 export const estagiariosMock = [
@@ -56,11 +45,8 @@ export const estagiariosMock = [
       responsavel: "Carlos Eduardo (Gerente de TI)",
     },
     frequencias: gerarFrequencias(12),
-    questionario: {
-      status: "pendente",
-      respondidoEm: null,
-      respostas: null,
-    },
+    questionario: { status: "pendente", respondidoEm: null, respostas: null },
+    confirmacaoSupervisor: null, // ainda em andamento
   },
   {
     id: 2,
@@ -90,14 +76,11 @@ export const estagiariosMock = [
       status: "respondido",
       respondidoEm: "2026-10-01T10:45:00",
       respostas: {
-        // Bloco 1 — Avaliação da Concedente
         concedenteInfraestrutura: "otimo",
         concedenteAtividades: "otimo",
         concedenteOrganizacao: "otimo",
         concedenteSupervisao: "bom",
         concedenteFinal: "otimo",
-
-        // Bloco 2 — Aspectos do Estagiário
         estagiarioAssiduidade: "otimo",
         estagiarioPontualidade: "otimo",
         estagiarioInteresse: "bom",
@@ -106,15 +89,13 @@ export const estagiariosMock = [
         estagiarioPostura: "otimo",
         estagiarioRelacionamento: "otimo",
         estagiarioFinal: "otimo",
-
-        // Observações e assinatura
-        observacoes:
-          "Excelente estagiária, recomendamos fortemente sua efetivação.",
+        observacoes: "Excelente estagiária, recomendamos fortemente sua efetivação.",
         assinaturaNome: "Ricardo Almeida",
         assinaturaLocal: "Araci/BA",
         assinaturaData: "2026-10-01",
       },
     },
+    confirmacaoSupervisor: null,
   },
   {
     id: 3,
@@ -140,11 +121,8 @@ export const estagiariosMock = [
       responsavel: "Carlos Eduardo (Gerente de TI)",
     },
     frequencias: gerarFrequencias(10),
-    questionario: {
-      status: "pendente",
-      respondidoEm: null,
-      respostas: null,
-    },
+    questionario: { status: "pendente", respondidoEm: null, respostas: null },
+    confirmacaoSupervisor: null,
   },
   {
     id: 4,
@@ -174,13 +152,11 @@ export const estagiariosMock = [
       status: "respondido",
       respondidoEm: "2026-07-05T14:20:00",
       respostas: {
-        // Bloco 1
         concedenteInfraestrutura: "otimo",
         concedenteAtividades: "otimo",
         concedenteOrganizacao: "bom",
         concedenteSupervisao: "otimo",
         concedenteFinal: "otimo",
-        // Bloco 2
         estagiarioAssiduidade: "otimo",
         estagiarioPontualidade: "otimo",
         estagiarioInteresse: "otimo",
@@ -189,13 +165,19 @@ export const estagiariosMock = [
         estagiarioPostura: "otimo",
         estagiarioRelacionamento: "bom",
         estagiarioFinal: "otimo",
-        // Extras
-        observacoes:
-          "Aluna excepcional. Contratada após o término do estágio.",
+        observacoes: "Aluna excepcional. Contratada após o término do estágio.",
         assinaturaNome: "Ricardo Almeida",
         assinaturaLocal: "Araci/BA",
         assinaturaData: "2026-07-05",
       },
+    },
+    /* ⬇️ Estágio concluído — aguardando confirmação mensal do supervisor */
+    confirmacaoSupervisor: {
+      status: "pendente", // "pendente" | "confirmado" | "com-observacoes"
+      token: "tok_a8f3b2c1", // token único do "e-mail"
+      enviadoEm: "2026-07-01T08:00:00",
+      confirmadoEm: null,
+      observacoes: "",
     },
   },
 ]

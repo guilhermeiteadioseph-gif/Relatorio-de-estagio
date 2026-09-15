@@ -16,7 +16,6 @@ export const navigationItems = {
     ],
     supervisor: [
         { title: 'Painel', url: '/supervisor/painel', icon: LayoutPanelLeft },
-        { title: 'Avaliação do Estágio', url: '/supervisor/avaliacao', icon: Clock },
         { title: 'Configurações', url: '/supervisor/configuracoes', icon: Settings },
     ],
     professor: [
@@ -25,10 +24,8 @@ export const navigationItems = {
     ],
     assistente: [
         { title: 'Painel', url: '/assistente/painel', icon: LayoutPanelLeft },
-        { title: 'Gerenciar Estagiários', url: '/assistente/gerenciar-estagiarios', icon: Users },
-        { title: 'Avaliaçãões de Estágio', url: '/assistente/avaliacoes-estagio', icon: CheckSquare },
-        { title: 'Documentos e Relatórios', url: '/assistente/relatorios', icon: FileText },
-        { title: 'Fichas de Frequência', url: '/assistente/fichas-frequencia', icon: ClipboardCheck },
+        { title: 'Usuários', url: '/assistente/usuarios', icon: Users },
+        { title: 'Fichas de Frequência', url: '/assistente/frequencia', icon: ClipboardCheck },
         { title: 'Configurações', url: '/assistente/configuracoes', icon: Settings },
     ],
     vice_diretor: [

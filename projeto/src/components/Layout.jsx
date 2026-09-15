@@ -3,6 +3,7 @@ import { AppSidebar } from "./app-sidebar";
 import { 
   SidebarProvider, 
   SidebarInset, } from "@/components/ui/sidebar";
+import SinoNotificacoes from "@/components/notificacoes/sinonotificacoes";
 
 export function Layout({ children }) {
   const { user } = useAuth()
@@ -17,6 +18,9 @@ export function Layout({ children }) {
                 <h2 className="text-sm font-medium text-slate-900 md:peer-data-[state=collapsed]:hidden">
                   {user?.role ? `Painel do ${user.role}` : 'Sistema Escolar'}
                 </h2>
+              </div>
+              <div className="ml-auto flex items-center gap-2">
+                <SinoNotificacoes />
               </div>
             </header>
             <main className="p-6 min-h-[calc(100vh-4rem)]" style={{ backgroundColor: '#f6f8fa' }}>
