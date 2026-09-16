@@ -22,7 +22,7 @@ export function PaginaLogin() {
         e.preventDefault();
         setError("");
 
-        const usuarioLogado = login(email,senha);
+        const usuarioLogado = login(email, senha);
 
         if (usuarioLogado) {
             if (usuarioLogado.role === roles.ALUNO) {
@@ -150,7 +150,7 @@ export function PaginaLogin() {
               Não é um usuário?{" "}
               <Link
                 to="/cadastro"
-                className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                className="font-semibold text-blue-600 hover:text-blue-800 hover:underline"
               >
                 Crie sua conta aqui
               </Link>

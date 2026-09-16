@@ -19,7 +19,6 @@ export default function LayoutViceDiretor() {
       case "empresas":              return <EmpresasSection />
       case "cursos":                return <CursosSection />
       case "frequencias":           return <FrequenciasSection />
-      default:                      return <Navigate to="/vice-diretor/painel" replace />
     }
   }
 
