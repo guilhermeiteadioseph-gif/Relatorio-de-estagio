@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { roles } from "../constants/roles";
+import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,6 +136,25 @@ export function PaginaLogin() {
               </button>
               </div>
             </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-slate-400">ou</span>
+              </div>
+            </div>
+
+            <p className="text-center text-sm text-slate-500">
+              Não é um usuário?{" "}
+              <Link
+                to="/cadastro"
+                className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                Crie sua conta aqui
+              </Link>
+            </p>
           </div>
 
           {/* Rodapé Opcional */}

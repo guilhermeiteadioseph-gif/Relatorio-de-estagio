@@ -9,9 +9,6 @@ import {
 export const navigationItems = {
     aluno: [
         { title: 'Painel', url: '/aluno/painel', icon: LayoutPanelLeft },
-        { title: 'Minhas Frequências', url: '/aluno/frequencias', icon: User },
-        { title: 'Documentos e Relatórios', url: '/aluno/relatorio', icon: FileText },
-        { title: 'Autoavaliação', url: '/aluno/autoavaliacao', icon: CheckSquare },
         { title: 'Configurações', url: '/aluno/configuracoes', icon: Settings },
     ],
     supervisor: [

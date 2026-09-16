@@ -6,6 +6,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { roles } from './constants/roles';
 import { Navigate } from 'react-router';
 
+import CadastroPage from './pages/cadastro/cadastro';
 import LayoutEstagiario from './pages/aluno/layoutaluno';
 import LayoutProfessor from './pages/professor/layoutprofessor';
 import LayoutSupervisor from './pages/supervisor/layoutsupervisor';
@@ -27,6 +28,7 @@ export default function App() {
         <FrequenciaProvider>
           <Routes>
             <Route path="/login" element={<PaginaLogin />} />
+            <Route path="/cadastro" element={<CadastroPage />} />
             <Route path="/access-denied" element={<AccessDeniedPage />} />
             
               <Route 

@@ -5,30 +5,35 @@ export const mockUsers = [
         id: 1,
         name: 'João Silva',
         email: 'joao.silva@example.com',
+        senha: 'senha1234567',
         role: roles.ALUNO
     },
     {
         id: 2,
         name: 'Maria Oliveira',
         email: 'maria.oliveira@example.com',
+        senha: 'senha1234567',
         role: roles.PROFESSOR
     },
     {
         id: 3,
         name: 'Carlos Santos',
         email: 'carlos.santos@example.com',
+        senha: 'senha1234567',
         role: roles.SUPERVISOR
     },
     {
         id: 4,
         name: 'Ana Costa',
         email: 'ana.costa@example.com',
+        senha: 'senha1234567',
         role: roles.ASSISTENTE
     },
     {
         id: 5,
         name: 'Pedro Almeida',
         email: 'pedro.almeida@example.com',
+        senha: 'senha1234567',
         role: roles.VICE_DIRETOR
     }
 ]
