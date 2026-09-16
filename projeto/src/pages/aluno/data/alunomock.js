@@ -122,8 +122,8 @@ export const alunoMock = {
     //   "devolvido"         → professor pediu correções
     //   "aprovado"          → professor aprovou e encaminhou ao vice-diretor
     //   "nota-atribuida"    → vice-diretor atribuiu a nota final
-    status: "devolvido",
-    arquivoNome: "relatorio_final_joao_silva.pdf",
+    status: "nao-enviado",
+    arquivoNome: null, // preenchido quando o aluno submeter
     dataEnvio: "2026-10-15T10:30:00",
     feedbackProfessor:
       "Ajustar a formatação das referências bibliográficas conforme a ABNT NBR 6023. Corrigir também a numeração das figuras.",

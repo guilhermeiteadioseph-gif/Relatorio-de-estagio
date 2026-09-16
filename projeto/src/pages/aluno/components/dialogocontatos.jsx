@@ -152,7 +152,6 @@ function CartaoResponsavel({ responsavel }) {
 
       <div className="mt-3 flex gap-2">
         <Button
-          asChild
           variant="outline"
           size="sm"
           className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"

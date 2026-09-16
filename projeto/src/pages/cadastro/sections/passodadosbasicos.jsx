@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "@/components/ui/sonner"
-import { Loader2, Mail, Lock, User, Info } from "lucide-react"
+import { Loader2, Mail, Lock, User, Info, Eye, EyeOff } from "lucide-react"
 
 import { roles, roleMetadata, rolesDisponiveisCadastro } from "@/constants/roles"
 import { validarEmail, validarSenha } from "@/utils/validacao"
@@ -14,13 +14,11 @@ import { verificarSenhaVazada } from "@/utils/apis"
 import { useAuth } from "@/contexts/AuthContext"
 
 /**
- * Passo 1 — Dados básicos.
+ * Passo 1 — Dados básicos do cadastro.
  *
- * Valida:
- *   - Nome completo (>= 2 palavras)
- *   - E-mail bem-formado
- *   - Senha conforme perfil (10 ou 12 chars, HIBP)
- *   - Confirmação de senha
+ * Valida nome completo, e-mail, senha por perfil (12/10 chars + HIBP)
+ * e confirmação. O botão "olho" revela AMBOS os campos de senha ao
+ * mesmo tempo (Senha + Confirmar senha).
  */
 export default function PassoDadosBasicos({ dados, onAvancar }) {
   const { registrar } = useAuth()
@@ -32,6 +30,12 @@ export default function PassoDadosBasicos({ dados, onAvancar }) {
   const [role, setRole] = useState(dados.role || roles.ALUNO)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState("")
+
+  /**
+   * Controla a visibilidade das senhas.
+   * Um único estado → um clique revela/oculta os DOIS campos de senha.
+   */
+  const [mostrarSenha, setMostrarSenha] = useState(false)
 
   const meta = roleMetadata[role]
 
@@ -73,7 +77,12 @@ export default function PassoDadosBasicos({ dados, onAvancar }) {
     }
 
     // 6. Chama o "backend" (AuthContext)
-    const res = await registrar({ nome: nome.trim(), email: email.trim().toLowerCase(), senha, role })
+    const res = await registrar({
+      nome: nome.trim(),
+      email: email.trim().toLowerCase(),
+      senha,
+      role,
+    })
     setCarregando(false)
 
     if (!res.ok) {
@@ -82,7 +91,12 @@ export default function PassoDadosBasicos({ dados, onAvancar }) {
     }
 
     toast.success("Verifique seu e-mail", "Enviamos um código de 6 dígitos.")
-    onAvancar({ nome: nome.trim(), email: email.trim().toLowerCase(), senha, role })
+    onAvancar({
+      nome: nome.trim(),
+      email: email.trim().toLowerCase(),
+      senha,
+      role,
+    })
   }
 
   return (
@@ -96,29 +110,57 @@ export default function PassoDadosBasicos({ dados, onAvancar }) {
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Perfil */}
+          {/* ------------------------------------------------------ */}
+          {/* Perfil — cards em grid com altura uniforme              */}
+          {/* ------------------------------------------------------ */}
           <div className="space-y-2">
-            <Label>Você é:</Label>
+            <Label className="text-sm font-medium text-slate-700">Você é:</Label>
+
+            {/*
+              Grid responsivo:
+                - 1 coluna no mobile (empilhado)
+                - 3 colunas a partir de `sm` (alinhados lado a lado)
+              Cada card tem `min-h-[52px]` para alinhar visualmente,
+              independente do tamanho do texto do label.
+            */}
             <RadioGroup
               value={role}
               onValueChange={setRole}
               disabled={carregando}
-              className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+              className="grid grid-cols-1 gap-2 sm:grid-cols-3"
             >
-              {rolesDisponiveisCadastro.map((r) => (
-                <label
-                  key={r}
-                  htmlFor={`role-${r}`}
-                  className={`flex cursor-pointer items-center gap-2 rounded-lg border p-3 transition ${
-                    role === r
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <RadioGroupItem id={`role-${r}`} value={r} />
-                  <span className="text-xs font-medium">{roleMetadata[r].label}</span>
-                </label>
-              ))}
+              {rolesDisponiveisCadastro.map((r) => {
+                const ativo = role === r
+                return (
+                  <label
+                    key={r}
+                    htmlFor={`role-${r}`}
+                    className={[
+                      // Base: card clicável, altura fixa, conteúdo centrado
+                      "flex min-h-[52px] cursor-pointer items-center gap-3 rounded-lg border px-3 py-2",
+                      "transition-all select-none",
+                      // Estado ativo
+                      ativo
+                        ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500/20"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                      // Desabilitado
+                      carregando && "pointer-events-none opacity-60",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    <RadioGroupItem id={`role-${r}`} value={r} className="shrink-0" />
+                    <span
+                      className={[
+                        "text-xs font-medium leading-tight",
+                        ativo ? "text-blue-700" : "text-slate-700",
+                      ].join(" ")}
+                    >
+                      {roleMetadata[r].label}
+                    </span>
+                  </label>
+                )
+              })}
             </RadioGroup>
           </div>
 
@@ -153,35 +195,74 @@ export default function PassoDadosBasicos({ dados, onAvancar }) {
             />
           </div>
 
-          {/* Senha + confirmação */}
+          {/* ------------------------------------------------------ */}
+          {/* Senha + Confirmação                                     */}
+          {/* ------------------------------------------------------ */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Campo Senha — com botão de olho à direita */}
             <div className="space-y-1.5">
               <Label htmlFor="senha" className="flex items-center gap-1.5">
                 <Lock className="size-3.5 text-slate-400" /> Senha
               </Label>
-              <Input
-                id="senha"
-                type="password"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                disabled={carregando}
-                autoComplete="new-password"
-              />
+
+              {/*
+                Envolvemos o <Input> em um <div relative> para poder
+                posicionar o botão de olho de forma absoluta dentro do campo.
+                O `pr-9` no input reserva espaço para o ícone não sobrepor
+                o texto digitado.
+              */}
+              <div className="relative">
+                <Input
+                  id="senha"
+                  type={mostrarSenha ? "text" : "password"}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  disabled={carregando}
+                  autoComplete="new-password"
+                  className="pr-9"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha((v) => !v)}
+                  disabled={carregando}
+                  aria-label={mostrarSenha ? "Ocultar senha" : "Exibir senha"}
+                  title={mostrarSenha ? "Ocultar senha" : "Exibir senha"}
+                  className={[
+                    // Posicionamento absoluto à direita, centralizado verticalmente
+                    "absolute top-1/2 right-1.5 -translate-y-1/2",
+                    // Aparência: ícone pequeno, com hover discreto
+                    "inline-flex size-7 items-center justify-center rounded-md",
+                    "text-slate-400 transition-colors",
+                    "hover:bg-slate-100 hover:text-slate-700",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                  ].join(" ")}
+                >
+                  {mostrarSenha ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </button>
+              </div>
+
               <p className="flex items-start gap-1 text-[11px] text-slate-500">
                 <Info className="mt-0.5 size-3 shrink-0" />
                 Mínimo de {meta.minSenha} caracteres
-                {meta.requer2FA ? " (perfil com 2FA)" : ""}. Espaços e caracteres
-                especiais são permitidos.
+                {meta.requer2FA ? " (perfil com 2FA)" : ""}. Espaços e
+                caracteres especiais são permitidos.
               </p>
             </div>
 
+            {/* Campo Confirmar senha — segue o mesmo estado de visibilidade */}
             <div className="space-y-1.5">
               <Label htmlFor="confirmacao" className="flex items-center gap-1.5">
                 <Lock className="size-3.5 text-slate-400" /> Confirmar senha
               </Label>
               <Input
                 id="confirmacao"
-                type="password"
+                type={mostrarSenha ? "text" : "password"}
                 value={confirmacao}
                 onChange={(e) => setConfirmacao(e.target.value)}
                 disabled={carregando}

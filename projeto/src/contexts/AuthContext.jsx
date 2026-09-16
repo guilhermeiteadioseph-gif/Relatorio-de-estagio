@@ -3,54 +3,214 @@ import { roles, roleMetadata } from "../constants/roles"
 
 const AuthContext = createContext(null)
 
-/* ------------------------------------------------------------------ */
-/*  Helpers internos                                                   */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Constantes de segurança                                            */
+/* ================================================================== */
 
-/** Gera um código de 6 dígitos (simula o token que viria por e-mail). */
-function gerarCodigo6() {
-  return String(Math.floor(100000 + Math.random() * 900000))
-}
+/** TTL do código (24 horas). */
+const TTL_CODIGO_MS = 24 * 60 * 60 * 1000
 
-/** Persiste a "caixa de e-mails simulada" no localStorage (dev only). */
-function enviarEmailSimulado(destinatario, codigo) {
-  const key = `mock_emails_${destinatario}`
-  localStorage.setItem(key, JSON.stringify({ codigo, expiraEm: Date.now() + 24 * 3600 * 1000 }))
-  // Log visual para o dev poder testar
-  console.info(`[MOCK EMAIL] Código para ${destinatario}: ${codigo}`)
-}
+/** Intervalo mínimo entre dois envios (60s). */
+const INTERVALO_MIN_ENTRE_ENVIOS_MS = 60 * 1000
 
-/** Lê o código pendente do localStorage. */
+/** Máximo de envios por janela deslizante. */
+const MAX_ENVIOS_POR_HORA = 5
+const JANELA_RATE_LIMIT_MS = 60 * 60 * 1000
+
+/** Número máximo de tentativas de verificação antes de invalidar. */
+const MAX_TENTATIVAS = 5
+
+/* ================================================================== */
+/*  Helpers — storage                                                  */
+/* ================================================================== */
+
+const KEY_CODIGO = (email) => `mock_emails_${email}`
+const KEY_RATE = (email) => `mock_rate_limit_${email}`
+
 function lerCodigoPendente(email) {
   try {
-    return JSON.parse(localStorage.getItem(`mock_emails_${email}`) || "null")
+    return JSON.parse(localStorage.getItem(KEY_CODIGO(email)) || "null")
   } catch {
     return null
   }
 }
 
-/* ------------------------------------------------------------------ */
+function salvarCodigoPendente(email, registro) {
+  localStorage.setItem(KEY_CODIGO(email), JSON.stringify(registro))
+}
+
+function removerCodigoPendente(email) {
+  localStorage.removeItem(KEY_CODIGO(email))
+}
+
+function lerHistoricoEnvios(email) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(KEY_RATE(email)) || "[]")
+    return Array.isArray(arr) ? arr : []
+  } catch {
+    return []
+  }
+}
+
+function salvarHistoricoEnvios(email, timestamps) {
+  localStorage.setItem(KEY_RATE(email), JSON.stringify(timestamps))
+}
+
+/* ================================================================== */
+/*  Helpers — geração e hash                                           */
+/* ================================================================== */
+
+/** Gera um código numérico de 6 dígitos (100000–999999). */
+function gerarCodigo6() {
+  const buf = new Uint32Array(1)
+  crypto.getRandomValues(buf)
+  return String(100000 + (buf[0] % 900000))
+}
+
+/**
+ * Gera o hash SHA-256 (hex) do código concatenado ao e-mail.
+ * Usar o e-mail como "sal" evita que o mesmo código tenha o mesmo hash
+ * para usuários diferentes.
+ *
+ * Em produção, o backend faria exatamente isso (ou usaria bcrypt/argon2).
+ */
+async function hashCodigo(codigo, email) {
+  const dados = new TextEncoder().encode(`${codigo}::${email}`)
+  const digest = await crypto.subtle.digest("SHA-256", dados)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+/* ================================================================== */
+/*  Rate limit (client-side, apenas para simular o backend)            */
+/* ================================================================== */
+
+/**
+ * Verifica se o e-mail pode receber um novo código AGORA.
+ *
+ * Regras (mesmas que o backend aplicaria):
+ *   1) O último envio precisa ter sido há pelo menos 60s.
+ *   2) No máximo 5 envios dentro de uma janela deslizante de 1 hora.
+ *
+ * @returns {{
+ *   permitido: boolean,
+ *   motivo?: "intervalo" | "limite_hora",
+ *   segundosRestantes?: number,
+ *   enviosNaJanela: number
+ * }}
+ */
+function verificarRateLimit(email) {
+  const agora = Date.now()
+  const historico = lerHistoricoEnvios(email).filter(
+    (t) => agora - t < JANELA_RATE_LIMIT_MS
+  )
+
+  // Persiste o histórico já podado (economiza espaço)
+  salvarHistoricoEnvios(email, historico)
+
+  const ultimo = historico[historico.length - 1]
+  if (ultimo && agora - ultimo < INTERVALO_MIN_ENTRE_ENVIOS_MS) {
+    const segundosRestantes = Math.ceil(
+      (INTERVALO_MIN_ENTRE_ENVIOS_MS - (agora - ultimo)) / 1000
+    )
+    return {
+      permitido: false,
+      motivo: "intervalo",
+      segundosRestantes,
+      enviosNaJanela: historico.length,
+    }
+  }
+
+  if (historico.length >= MAX_ENVIOS_POR_HORA) {
+    const maisAntigo = historico[0]
+    const segundosRestantes = Math.ceil(
+      (JANELA_RATE_LIMIT_MS - (agora - maisAntigo)) / 1000
+    )
+    return {
+      permitido: false,
+      motivo: "limite_hora",
+      segundosRestantes,
+      enviosNaJanela: historico.length,
+    }
+  }
+
+  return { permitido: true, enviosNaJanela: historico.length }
+}
+
+/* ================================================================== */
+/*  Envio do código (mock)                                             */
+/* ================================================================== */
+
+/**
+ * Fluxo completo de "envio de código":
+ *   1. Consulta rate limit.
+ *   2. Gera código numérico.
+ *   3. Cria hash SHA-256.
+ *   4. Salva { hash, expiraEm, tentativas } no localStorage.
+ *   5. Registra o envio no histórico (rate limit).
+ *
+ * Em produção, os passos 3–5 aconteceriam no servidor e o código puro
+ * seria despachado por e-mail (Resend/SendGrid/etc.) SEM NUNCA voltar
+ * para o cliente.
+ *
+ * @returns {Promise<{ ok: boolean, erro?: string, segundosRestantes?: number }>}
+ */
+async function enviarCodigoPara(email) {
+  const rate = verificarRateLimit(email)
+  if (!rate.permitido) {
+    return {
+      ok: false,
+      erro:
+        rate.motivo === "intervalo"
+          ? `Aguarde ${rate.segundosRestantes}s para reenviar.`
+          : `Limite de ${MAX_ENVIOS_POR_HORA} envios por hora atingido. Tente novamente em ${Math.ceil(
+              (rate.segundosRestantes || 0) / 60
+            )} min.`,
+      segundosRestantes: rate.segundosRestantes,
+    }
+  }
+
+  const codigo = gerarCodigo6()
+  const hash = await hashCodigo(codigo, email)
+
+  salvarCodigoPendente(email, {
+    hash,
+    expiraEm: Date.now() + TTL_CODIGO_MS,
+    criadoEm: Date.now(),
+    tentativas: 0,
+  })
+
+  // Atualiza histórico do rate limit
+  const historico = lerHistoricoEnvios(email)
+  historico.push(Date.now())
+  salvarHistoricoEnvios(email, historico)
+
+  // ⬇️ APENAS EM DEV. Em produção, o código NUNCA apareceria no console.
+  console.info(`[MOCK EMAIL] Código para ${email}: ${codigo}`)
+
+  return { ok: true }
+}
+
+/* ================================================================== */
 /*  Provider                                                           */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem("siget_user")
     return raw ? JSON.parse(raw) : null
   })
 
-  /** Cadastros pendentes de aprovação (escola revisa depois). */
   const [pendentes, setPendentes] = useState(() => {
     const raw = localStorage.getItem("siget_pendentes")
     return raw ? JSON.parse(raw) : []
   })
 
-  /** Usuários registrados (mock — substituir por backend real). */
   const [usuarios, setUsuarios] = useState(() => {
     const raw = localStorage.getItem("siget_usuarios")
     return raw
       ? JSON.parse(raw)
       : [
-          // Usuários seed para login de teste
           { email: "aluno@teste.com", senha: "aluno1234567", role: roles.ALUNO, nome: "Aluno Teste" },
           { email: "professor@teste.com", senha: "professor1234", role: roles.PROFESSOR, nome: "Professor Teste" },
           { email: "vice@teste.com", senha: "vicediretor", role: roles.VICE_DIRETOR, nome: "Vice Teste" },
@@ -67,9 +227,9 @@ export function AuthProvider({ children }) {
     localStorage.setItem("siget_pendentes", JSON.stringify(pendentes))
   }, [pendentes])
 
-  /* ------------------------------------------------------------------ */
-  /*  Login / Logout                                                    */
-  /* ------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------- */
+  /*  Login / Logout                                                   */
+  /* ---------------------------------------------------------------- */
   const login = (email, senha) => {
     const u = usuarios.find(
       (x) => x.email.toLowerCase() === String(email).toLowerCase() && x.senha === senha
@@ -86,65 +246,108 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("siget_user")
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Etapa 1 — Registrar dados básicos                                 */
-  /* ------------------------------------------------------------------ */
-  /**
-   * Registra dados iniciais e dispara o código de verificação.
-   * REGRA DE SEGURANÇA: não revela se o e-mail já existe — sempre responde
-   * a mesma coisa e sempre "envia" o código.
-   *
-   * @returns {Promise<{ ok: boolean }>}
-   */
+  /* ---------------------------------------------------------------- */
+  /*  Cadastro                                                         */
+  /* ---------------------------------------------------------------- */
   async function registrar({ nome, email, senha, role, metodo2FA }) {
-    // Simula latência
-    await new Promise((r) => setTimeout(r, 600))
+    await new Promise((r) => setTimeout(r, 400))
 
-    const jaExiste = usuarios.some((u) => u.email.toLowerCase() === email.toLowerCase())
+    const emailNorm = email.toLowerCase()
+    const jaExiste = usuarios.some((u) => u.email.toLowerCase() === emailNorm)
 
-    // NUNCA revelamos se o e-mail existe → sempre gera código.
-    // Em produção, o backend decide o que fazer (reenviar, notificar, etc).
-    const codigo = gerarCodigo6()
-    enviarEmailSimulado(email, codigo)
+    // Nunca revela duplicidade. Só dispara o envio (que já aplica rate limit).
+    const envio = await enviarCodigoPara(emailNorm)
+    if (!envio.ok) {
+      return { ok: false, erro: envio.erro }
+    }
 
     if (jaExiste) {
-      // Silenciosamente não regrava; o usuário verá a mesma tela de verificação
+      // Silenciosamente não regrava — a tela de verificação é idêntica.
       return { ok: true, _jaExistia: true }
     }
 
-    // Guarda o cadastro temporário até a confirmação
-    const rascunho = { nome, email, senha, role, metodo2FA }
+    const rascunho = { nome, email: emailNorm, senha, role, metodo2FA }
     sessionStorage.setItem("siget_rascunho", JSON.stringify(rascunho))
-
     return { ok: true }
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Etapa 2 — Verificar código                                        */
-  /* ------------------------------------------------------------------ */
   /**
-   * Valida o código de 6 dígitos.
-   * @returns {{ ok: boolean, erro?: string }}
+   * Reenvia o código. Delega 100% ao enviarCodigoPara — que já checa o
+   * rate limit. Também retorna `segundosRestantes` quando bloqueado, para
+   * que a UI possa sincronizar o contador com a regra do "servidor".
    */
-  function confirmarEmail(email, codigo) {
-    const pendente = lerCodigoPendente(email)
-    if (!pendente) return { ok: false, erro: "Nenhum código pendente para este e-mail." }
-    if (Date.now() > pendente.expiraEm) return { ok: false, erro: "Código expirado. Solicite novamente." }
-    if (pendente.codigo !== String(codigo)) return { ok: false, erro: "Código incorreto." }
+  async function reenviarCodigo(email) {
+    return enviarCodigoPara(email.toLowerCase())
+  }
+
+  /**
+   * Consulta pública do rate limit — a UI usa antes de renderizar o botão
+   * "Reenviar" para saber se está liberado e, se não estiver, há quantos
+   * segundos estará.
+   */
+  function consultarRateLimit(email) {
+    return verificarRateLimit(email.toLowerCase())
+  }
+
+  /* ---------------------------------------------------------------- */
+  /*  Verificação do código                                            */
+  /* ---------------------------------------------------------------- */
+  /**
+   * Confere o código digitado contra o hash salvo.
+   * - Incrementa `tentativas` a cada erro.
+   * - Ao atingir MAX_TENTATIVAS, invalida o código (obriga novo envio).
+   * - Expira automaticamente após TTL_CODIGO_MS.
+   */
+  async function confirmarEmail(email, codigo) {
+    const emailNorm = email.toLowerCase()
+    const pendente = lerCodigoPendente(emailNorm)
+
+    if (!pendente) {
+      return { ok: false, erro: "Nenhum código pendente. Solicite um novo." }
+    }
+
+    if (Date.now() > pendente.expiraEm) {
+      removerCodigoPendente(emailNorm)
+      return { ok: false, erro: "Código expirado. Solicite um novo." }
+    }
+
+    if (pendente.tentativas >= MAX_TENTATIVAS) {
+      removerCodigoPendente(emailNorm)
+      return {
+        ok: false,
+        erro: `Muitas tentativas incorretas. Solicite um novo código.`,
+      }
+    }
+
+    const hashDigitado = await hashCodigo(String(codigo), emailNorm)
+
+    if (hashDigitado !== pendente.hash) {
+      const tentativas = pendente.tentativas + 1
+      const restam = MAX_TENTATIVAS - tentativas
+
+      if (restam <= 0) {
+        removerCodigoPendente(emailNorm)
+        return {
+          ok: false,
+          erro: `Muitas tentativas incorretas. Solicite um novo código.`,
+        }
+      }
+
+      salvarCodigoPendente(emailNorm, { ...pendente, tentativas })
+      return {
+        ok: false,
+        erro: `Código incorreto. ${restam} tentativa(s) restante(s).`,
+      }
+    }
+
+    // Sucesso: invalida para uso único.
+    removerCodigoPendente(emailNorm)
     return { ok: true }
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Etapa 3 — Finalizar cadastro                                      */
-  /* ------------------------------------------------------------------ */
-  /**
-   * Conclui o cadastro aplicando as regras por perfil.
-   *
-   * - Se `precisaAprovacao` → empilha em `pendentes`.
-   * - Caso contrário → salva como usuário ativo e faz login automático.
-   *
-   * @param {object} dadosExtra Dados específicos do perfil (empresa, matrícula, etc.)
-   */
+  /* ---------------------------------------------------------------- */
+  /*  Finalizar cadastro                                               */
+  /* ---------------------------------------------------------------- */
   async function finalizarCadastro(dadosExtra = {}) {
     await new Promise((r) => setTimeout(r, 400))
 
@@ -166,7 +369,6 @@ export function AuthProvider({ children }) {
       return { ok: true, pendente: true }
     }
 
-    // Perfil sem aprovação → ativa direto
     const novo = {
       nome: registro.nome,
       email: registro.email,
@@ -177,16 +379,15 @@ export function AuthProvider({ children }) {
     setUsuarios((prev) => [...prev, novo])
     sessionStorage.removeItem("siget_rascunho")
 
-    // Login automático
     const sessao = { nome: novo.nome, email: novo.email, role: novo.role }
     setUser(sessao)
     localStorage.setItem("siget_user", JSON.stringify(sessao))
     return { ok: true, pendente: false }
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Aprovação (usada pelo painel do vice-diretor)                     */
-  /* ------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------- */
+  /*  Aprovação / rejeição                                             */
+  /* ---------------------------------------------------------------- */
   function aprovarPendente(email) {
     const p = pendentes.find((x) => x.email === email)
     if (!p) return { ok: false }
@@ -203,7 +404,7 @@ export function AuthProvider({ children }) {
     return { ok: true }
   }
 
-  /* ------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------- */
   const value = {
     user,
     usuarios,
@@ -211,6 +412,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     registrar,
+    reenviarCodigo,
+    consultarRateLimit,
     confirmarEmail,
     finalizarCadastro,
     aprovarPendente,
