@@ -12,6 +12,8 @@ import LayoutProfessor from './pages/professor/layoutprofessor';
 import LayoutSupervisor from './pages/supervisor/layoutsupervisor';
 import LayoutViceDiretor from './pages/vice-diretor/layoutvicediretor';
 import LayoutAssistente from './pages/assistente/layoutassistente';
+import RecuperarSenhaPage from './pages/recuperarsenha/recuperarsenha';
+import RedefinirSenhaPage from './pages/recuperarsenha/redefinirsenha';
 
 const AccessDeniedPage = () => <h2>Acesso Negado</h2>;
 
@@ -29,6 +31,8 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<PaginaLogin />} />
             <Route path="/cadastro" element={<CadastroPage />} />
+            <Route path="/recuperar-senha" element={<RecuperarSenhaPage />} />
+            <Route path="/redefinir-senha" element={<RedefinirSenhaPage />} />
             <Route path="/access-denied" element={<AccessDeniedPage />} />
             
               <Route 

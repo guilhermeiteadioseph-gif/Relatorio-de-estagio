@@ -193,6 +193,25 @@ async function enviarCodigoPara(email) {
 }
 
 /* ================================================================== */
+/*  Recuperação de senha                                               */
+/* ================================================================== */
+
+/** TTL do link de recuperação (30 minutos). */
+const TTL_RECUPERACAO_MS = 30 * 60 * 1000
+
+/** Gera token URL-safe de 32 bytes (hex). */
+function gerarTokenRecuperacao() {
+  const buf = new Uint8Array(32)
+  crypto.getRandomValues(buf)
+  return Array.from(buf)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+/** Storage keys para o mock de recuperação. */
+const KEY_RECUPERACAO = (token) => `mock_recovery_${token}`
+
+/* ================================================================== */
 /*  Provider                                                           */
 /* ================================================================== */
 export function AuthProvider({ children }) {
@@ -288,6 +307,100 @@ export function AuthProvider({ children }) {
   function consultarRateLimit(email) {
     return verificarRateLimit(email.toLowerCase())
   }
+
+  /**
+ * Solicita recuperação de senha.
+ * REGRA ANTI-ENUMERAÇÃO: sempre retorna `{ ok: true }`, independentemente
+ * de o e-mail existir. Se existir, o link é gerado e "enviado".
+ *
+ * @param {string} email
+ * @returns {Promise<{ ok: true }>}
+ */
+async function solicitarRecuperacaoSenha(email) {
+  await new Promise((r) => setTimeout(r, 600))
+  const emailNorm = String(email).trim().toLowerCase()
+  const usuario = usuarios.find((u) => u.email.toLowerCase() === emailNorm)
+
+  if (usuario) {
+    const token = gerarTokenRecuperacao()
+    localStorage.setItem(
+      KEY_RECUPERACAO(token),
+      JSON.stringify({
+        email: emailNorm,
+        role: usuario.role,
+        expiraEm: Date.now() + TTL_RECUPERACAO_MS,
+        usado: false,
+      })
+    )
+
+    // ⬇️ Apenas em DEV. Em produção, o backend enviaria o link por e-mail
+    // e o token NUNCA apareceria no console.
+    console.info(
+      `[MOCK EMAIL] Link de recuperação para ${emailNorm}: ` +
+        `/redefinir-senha?token=${token}`
+    )
+  }
+
+  return { ok: true }
+}
+
+/**
+ * Valida um token de recuperação sem consumi-lo.
+ * Usado pela tela `/redefinir-senha` no carregamento.
+ *
+ * @returns {{ valido: boolean, email?: string, role?: string, erro?: string }}
+ */
+function validarTokenRecuperacao(token) {
+  if (!token) return { valido: false, erro: "Token ausente." }
+
+  try {
+    const raw = localStorage.getItem(KEY_RECUPERACAO(token))
+    if (!raw) return { valido: false, erro: "Link inválido ou expirado." }
+
+    const dados = JSON.parse(raw)
+    if (dados.usado) return { valido: false, erro: "Este link já foi utilizado." }
+    if (Date.now() > dados.expiraEm)
+      return { valido: false, erro: "Link expirado. Solicite um novo." }
+
+    return { valido: true, email: dados.email, role: dados.role }
+  } catch {
+    return { valido: false, erro: "Link inválido." }
+  }
+}
+
+/**
+ * Redefine a senha a partir do token.
+ * - Atualiza `usuarios` no estado + localStorage.
+ * - Marca o token como `usado` (uso único).
+ *
+ * @param {string} token
+ * @param {string} novaSenha
+ * @returns {Promise<{ ok: boolean, erro?: string }>}
+ */
+async function redefinirSenha(token, novaSenha) {
+  const check = validarTokenRecuperacao(token)
+  if (!check.valido) return { ok: false, erro: check.erro }
+
+  await new Promise((r) => setTimeout(r, 400))
+
+  setUsuarios((prev) =>
+    prev.map((u) =>
+      u.email.toLowerCase() === check.email ? { ...u, senha: novaSenha } : u
+    )
+  )
+
+  // Marca como usado (uso único)
+  const raw = localStorage.getItem(KEY_RECUPERACAO(token))
+  if (raw) {
+    const dados = JSON.parse(raw)
+    localStorage.setItem(
+      KEY_RECUPERACAO(token),
+      JSON.stringify({ ...dados, usado: true })
+    )
+  }
+
+  return { ok: true }
+}
 
   /* ---------------------------------------------------------------- */
   /*  Verificação do código                                            */
@@ -418,6 +531,9 @@ export function AuthProvider({ children }) {
     finalizarCadastro,
     aprovarPendente,
     rejeitarPendente,
+    solicitarRecuperacaoSenha,
+    validarTokenRecuperacao,
+    redefinirSenha,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
